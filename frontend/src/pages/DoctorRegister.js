@@ -1,13 +1,15 @@
 import React, { useRef, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useAuth } from "../useAuth.js";
-import { useHistory, useLocation } from "react-router-dom"
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from "react-router-dom"
 
-const DoctorLogin = () => {
+const DoctorRegister = () => {
+
     const emailRef = useRef()
     const passwordRef = useRef()
-    const { signin } = useAuth()
+    const passwordConfirmRef = useRef()
+
+    const { signup } = useAuth()
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
@@ -18,21 +20,21 @@ const DoctorLogin = () => {
     async function handleSubmit(e) {
         e.preventDefault()
 
+        if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+            return setError("Passwords do not match")
+        }
+
         try {
             setError("")
             setLoading(true)
+            await signup(emailRef.current.value, passwordRef.current.value)
+            history.replace("/")
+            history.push("/doctor")
+        } catch {
+            setError("Failed to create an account")
+        }
 
-            await signin(emailRef.current.value, passwordRef.current.value)
-            let { from } = location.state || { from: { pathname: "/" } };
-            history.replace(from);
-            //don't need to manually navigate to logged in page here, because handled by PrivateRoute
-        }
-        catch (e){
-            
-            setError(e.message)
-        }
         setLoading(false)
-
     }
 
     function onAlertCloseClick() {
@@ -49,11 +51,11 @@ const DoctorLogin = () => {
                         src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
                         alt="Workflow"
                     />
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in as Doctor</h2>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign Up as a Doctor</h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Or{' '}
-                        <Link to="/doctorRegister" className="font-medium text-indigo-600 hover:text-indigo-500">
-                            sign up for an account
+                        <Link to="/doctorLogin" className="font-medium text-indigo-600 hover:text-indigo-500">
+                            login with an existing account
                         </Link>
                     </p>
                 </div>
@@ -69,7 +71,6 @@ const DoctorLogin = () => {
                                 id="email-address"
                                 name="email"
                                 type="email"
-                                autoComplete="email"
                                 required
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Email address"
@@ -84,31 +85,24 @@ const DoctorLogin = () => {
                                 id="password"
                                 name="password"
                                 type="password"
-                                autoComplete="current-password"
                                 required
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Password"
                             />
                         </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <input
-                                id="remember-me"
-                                name="remember-me"
-                                type="checkbox"
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                                Remember me
+                        <div>
+                            <label htmlFor="passwordConfirm" className="sr-only">
+                                Password
                             </label>
-                        </div>
-
-                        <div className="text-sm">
-                            <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Forgot your password?
-                            </a>
+                            <input
+                                ref={passwordConfirmRef}
+                                id="passwordConfirm"
+                                name="passwordConfirm"
+                                type="password"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Confirm Password"
+                            />
                         </div>
                     </div>
 
@@ -120,20 +114,20 @@ const DoctorLogin = () => {
                             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                 <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
                             </span>
-                            Sign in
+                            Sign Up
                         </button>
                     </div>
                 </form>
 
                 {error &&
-                    <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
-                        <span class="text-xl inline-block mr-5 align-middle">
-                            <i class="fas fa-bell" />
+                    <div className ="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
+                        <span className="text-xl inline-block mr-5 align-middle">
+                            <i className="fas fa-bell" />
                         </span>
-                        <span class="inline-block align-middle mr-8">
-                            <b class="capitalize">Error</b> {error}
+                        <span className="inline-block align-middle mr-8">
+                            <b className="capitalize">Error</b> {error}
                         </span>
-                        <button onClick={onAlertCloseClick} class="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
+                        <button onClick={onAlertCloseClick} className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
                             <span>×</span>
                         </button>
                     </div>
@@ -142,12 +136,6 @@ const DoctorLogin = () => {
 
         </div>
     )
-
-    
-
-
 }
 
-
-
-export default DoctorLogin
+export default DoctorRegister

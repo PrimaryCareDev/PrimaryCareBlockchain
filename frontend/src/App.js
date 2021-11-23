@@ -13,6 +13,7 @@ import HomePage from "./pages/HomePage";
 import Doctor from './pages/Doctor';
 import DoctorLogin from './pages/DoctorLogin';
 import { AuthProvider, useAuth } from "./useAuth.js";
+import DoctorRegister from './pages/DoctorRegister';
 
 function App() {
 
@@ -31,6 +32,9 @@ function App() {
                     </PrivateRoute>
                     <Route exact path="/doctorLogin">
                         <DoctorLogin />
+                    </Route>
+                    <Route exact path="/doctorRegister">
+                        <DoctorRegister />
                     </Route>
 
                 </Switch>

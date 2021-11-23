@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext, createContext } from "react";
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, setPersistence, browserSessionPersistence } from "firebase/auth";
 
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+
 
 // Add your Firebase credentials
 const firebaseConfig = {
@@ -33,45 +35,40 @@ export function AuthProvider({ children }) {
 
 
     const auth = getAuth();
+    const db = getFirestore();
 
     // Wrap any Firebase methods we want to use making sure ...
     // ... to save the user to state.
     const signin = (email, password) => {
-
         return signInWithEmailAndPassword(auth, email, password)
-            .then((response) => {
-                setUser(response.user);
-                return response.user;
-            });
     };
 
     const signup = (email, password) => {
         return createUserWithEmailAndPassword(auth, email, password)
-            .then((response) => {
-                setUser(response.user);
-                return response.user;
-            });
+        .then((value) => {
+            try {
+                const docRef = doc(db, "doctors", value.user.uid)
+                setDoc(docRef, {
+                  email: value.user.email,
+                  verified: false
+                });
+                console.log("Document written with ID: ", docRef.id);
+              } catch (e) {
+                console.error("Error adding document: ", e);
+              }
+        });
     };
 
     const signout = () => {
         return signOut(auth)
-            .then(() => {
-                setUser(false);
-            });
     };
 
     const sendResetEmail = (email) => {
         return sendPasswordResetEmail(auth, email)
-            .then(() => {
-                return true;
-            });
     };
 
     const confirmReset = (code, password) => {
         return confirmPasswordReset(auth, code, password)
-            .then(() => {
-                return true;
-            });
     };
 
     // Subscribe to user on mount
@@ -80,11 +77,7 @@ export function AuthProvider({ children }) {
     // ... latest auth object.
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, user => {
-            if (user) {
-                setUser(user);
-            } else {
-                setUser(false);
-            }
+            setUser(user)
             setLoading(false)
 
         });
