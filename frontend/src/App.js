@@ -6,7 +6,6 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link,
     Redirect,
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -30,7 +29,7 @@ function App() {
                         {/*<Route path="/admin/calendar" exact={true}>*/}
                         {/*    <CalendarPage/>*/}
                         {/*</Route>*/}
-                        <PrivateRoute exact path="/doctor">
+                        <PrivateRoute path="/doctor">
                             <Doctor />
                         </PrivateRoute>
                         <Route exact path="/doctorLogin">

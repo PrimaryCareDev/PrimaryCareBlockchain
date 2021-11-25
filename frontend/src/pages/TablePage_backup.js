@@ -1,6 +1,6 @@
 import React from 'react'
 
-const TablePage = () => {
+const TablePage_backup = () => {
     return (
         <div className="shadow-2xl rounded-2xl bg-white dark:bg-gray-700 w-full ">
           <div className=" mx-auto px-4 sm:px-8">
@@ -240,4 +240,4 @@ const TablePage = () => {
     )
 }
 
-export default TablePage
+export default TablePage_backup

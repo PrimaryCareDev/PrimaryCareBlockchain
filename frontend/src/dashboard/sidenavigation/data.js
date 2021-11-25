@@ -9,14 +9,14 @@ import DocumentationIcon from './icons/documentation';
 
 const data = [
   {
-    title: 'Dashboard',
+    title: 'Home',
     icon: <HomeIcon />,
-    link: '/',
+    link: '/doctor',
   },
   {
-    title: 'Projects',
+    title: 'Patients',
     icon: <ProjectsIcon />,
-    link: '/admin/projects',
+    link: '/doctor/patients',
   },
   {
     title: 'My tasks',

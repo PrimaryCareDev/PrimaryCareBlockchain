@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react'
-import Table from './Table'
-import TableCell from './TableCell'
-import TableRow from './TableRow'
-import TableHeader from './TableHeader'
-import TableFooter from './TableFooter'
-import TableContainer from './TableContainer'
-import TableBody from './TableBody'
-import Pagination from './Pagination'
+import Table from '../components/Table'
+import TableCell from '../components/TableCell'
+import TableRow from '../components/TableRow'
+import TableHeader from '../components/TableHeader'
+import TableFooter from '../components/TableFooter'
+import TableContainer from '../components/TableContainer'
+import TableBody from '../components/TableBody'
+import Pagination from '../components/Pagination'
 
 const response = [
     {
@@ -373,7 +373,7 @@ const response = [
 
   
 
-const TablePage2 = () => {
+const TablePage = () => {
 
   const [pageTable1, setPageTable1] = useState(1)
 
@@ -444,4 +444,4 @@ const TablePage2 = () => {
     )
 }
 
-export default TablePage2
+export default TablePage
