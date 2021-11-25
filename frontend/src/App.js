@@ -14,31 +14,36 @@ import Doctor from './pages/Doctor';
 import DoctorLogin from './pages/DoctorLogin';
 import { AuthProvider, useAuth } from "./useAuth.js";
 import DoctorRegister from './pages/DoctorRegister';
+import DashboardProvider from './dashboard/provider/context'
 
 function App() {
 
     return (
         <AuthProvider>
             <Router>
-                <Switch>
-                    <Route exact path="/">
-                        <HomePage />
-                    </Route>
-                    {/*<Route path="/admin/calendar" exact={true}>*/}
-                    {/*    <CalendarPage/>*/}
-                    {/*</Route>*/}
-                    <PrivateRoute exact path="/doctor">
-                        <Doctor />
-                    </PrivateRoute>
-                    <Route exact path="/doctorLogin">
-                        <DoctorLogin />
-                    </Route>
-                    <Route exact path="/doctorRegister">
-                        <DoctorRegister />
-                    </Route>
 
-                </Switch>
+                <DashboardProvider>
+                    <Switch>
+                        <Route exact path="/">
+                            <HomePage />
+                        </Route>
+                        {/*<Route path="/admin/calendar" exact={true}>*/}
+                        {/*    <CalendarPage/>*/}
+                        {/*</Route>*/}
+                        <PrivateRoute exact path="/doctor">
+                            <Doctor />
+                        </PrivateRoute>
+                        <Route exact path="/doctorLogin">
+                            <DoctorLogin />
+                        </Route>
+                        <Route exact path="/doctorRegister">
+                            <DoctorRegister />
+                        </Route>
+
+                    </Switch>
+                </DashboardProvider>
             </Router>
+
         </AuthProvider>
     );
 }
@@ -48,11 +53,11 @@ function App() {
 // screen if you're not yet authenticated.
 function PrivateRoute({ children, ...rest }) {
     let { user } = useAuth();
-    
+
     return (
         <Route
             {...rest}
-            render={({ location }) => 
+            render={({ location }) =>
                 user ? (
                     children
                 ) : (
@@ -63,7 +68,7 @@ function PrivateRoute({ children, ...rest }) {
                         }}
                     />
                 )
-            
+
             }
         />
     );
