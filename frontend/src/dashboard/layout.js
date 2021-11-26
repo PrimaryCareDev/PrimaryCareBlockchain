@@ -1,6 +1,6 @@
 import Main from './main';
 import Overlay from './provider/overlay';
-import TopNavigation from './topnavigation';
+import TopNavigation from './topnavigation/TopNavigation';
 import SideNavigation from './sidenavigation';
 import { useToggle } from './provider/context';
 
@@ -9,7 +9,7 @@ const style = {
   close: ' lg:w-99',
   mainContainer: `flex flex-col w-full h-screen pl-0 lg:space-y-4`,
   container: `bg-gray-100 h-screen overflow-hidden relative`,
-  main: `h-screen overflow-auto px-2 pb-36 pt-2 md:pb-8 md:pt-4 lg:pt-8 lg:px-8`,
+  main: `h-screen container mx-auto overflow-auto px-2 pb-36 pt-2 md:pb-8 md:pt-4 lg:pt-8 lg:px-8`,
 };
 
 export default function DashboardLayout({ children }) {

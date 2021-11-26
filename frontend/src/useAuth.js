@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext, createContext } from "react";
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, setPersistence, browserSessionPersistence } from "firebase/auth";
 
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from "firebase/firestore/lite";
 
 
 // Add your Firebase credentials
