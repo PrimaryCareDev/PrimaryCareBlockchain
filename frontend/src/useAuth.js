@@ -31,6 +31,7 @@ export const useAuth = () => {
 export function AuthProvider({ children }) {
 
     const [user, setUser] = useState(null);
+    const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
 
 
@@ -60,6 +61,7 @@ export function AuthProvider({ children }) {
     };
 
     const signout = () => {
+        setUserData(null)
         return signOut(auth)
     };
 
@@ -89,6 +91,8 @@ export function AuthProvider({ children }) {
     // Return the user object and auth methods
     const value = {
         user,
+        userData,
+        setUserData,
         signin,
         signup,
         signout,

@@ -8,7 +8,7 @@ import {doc, getFirestore, getDoc} from "firebase/firestore/lite";
 const DoctorLogin = () => {
     const emailRef = useRef()
     const passwordRef = useRef()
-    const { signin } = useAuth()
+    const { signin, setUserData } = useAuth()
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
@@ -31,13 +31,14 @@ const DoctorLogin = () => {
 
                 const docSnap = getDoc(docRef).then((value) => {
                     if (value.exists()) {
-                        // setUser(value)
+                        setUserData(value.data())
                         setLoading(false)
                         let { from } = location.state || { from: { pathname: "/" } };
                         history.replace(from);
                         return true
                     } else {
                         setError("Doctor Account not found")
+                        setUserData(null)
                         setLoading(false)
 
 
@@ -148,14 +149,14 @@ const DoctorLogin = () => {
                 </form>
 
                 {error &&
-                    <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
-                        <span class="text-xl inline-block mr-5 align-middle">
-                            <i class="fas fa-bell" />
+                    <div className="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
+                        <span className="text-xl inline-block mr-5 align-middle">
+                            <i className="fas fa-bell" />
                         </span>
-                        <span class="inline-block align-middle mr-8">
-                            <b class="capitalize">Error</b> {error}
+                        <span className="inline-block align-middle mr-8">
+                            <b className="capitalize">Error</b> {error}
                         </span>
-                        <button onClick={onAlertCloseClick} class="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
+                        <button onClick={onAlertCloseClick} className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
                             <span>×</span>
                         </button>
                     </div>

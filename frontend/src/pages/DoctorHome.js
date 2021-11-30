@@ -3,19 +3,19 @@ import SectionTitle from "../components/SectionTitle";
 import {getAuth} from '@firebase/auth';
 import {doc, getDoc, getFirestore} from "firebase/firestore/lite";
 import LoadingDots from "../components/LoadingDots";
+import {useAuth} from "../useAuth";
 
 const DoctorHome = () => {
-    const [info, setInfo] = useState([])
     const auth = getAuth()
     const db = getFirestore()
-
+    const { userData, setUserData } = useAuth()
 
     async function getDoctorDetails() {
         try {
             const docRef = doc(db, "doctors", auth.currentUser.uid)
             const docSnap = await getDoc(docRef)
             if (docSnap.exists()) {
-                setInfo(docSnap.data())
+                setUserData(docSnap.data())
                 setLoading(false)
             }
         } catch {
@@ -25,7 +25,12 @@ const DoctorHome = () => {
 
     const [loading, setLoading] = useState(true)
     useEffect(() => {
-        getDoctorDetails()
+        if (!userData) {
+            getDoctorDetails()
+        }
+        else {
+            setLoading(false)
+        }
     }, []);
 
     return (
@@ -34,8 +39,8 @@ const DoctorHome = () => {
                 <LoadingDots/>
                 :
                 <>
-                    <SectionTitle>Welcome Doctor {info.email} </SectionTitle>
-                    {!info.verified ? (
+                    <SectionTitle>Welcome Doctor {userData.email} </SectionTitle>
+                    {!userData.verified ? (
                     <div className="bg-yellow-200 border-yellow-600 text-yellow-600 border-l-4 p-4" role="alert">
                         <p className="font-bold">
                             Your account has not been verified
