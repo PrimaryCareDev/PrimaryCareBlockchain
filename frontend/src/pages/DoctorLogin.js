@@ -3,6 +3,7 @@ import { LockClosedIcon } from '@heroicons/react/solid'
 import { useAuth } from "../useAuth.js";
 import { useHistory, useLocation } from "react-router-dom"
 import { Link } from 'react-router-dom';
+import {doc, getFirestore, getDoc} from "firebase/firestore/lite";
 
 const DoctorLogin = () => {
     const emailRef = useRef()
@@ -11,6 +12,7 @@ const DoctorLogin = () => {
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
+    const db = getFirestore();
 
     let location = useLocation();
 
@@ -23,15 +25,35 @@ const DoctorLogin = () => {
             setLoading(true)
 
             await signin(emailRef.current.value, passwordRef.current.value)
-            let { from } = location.state || { from: { pathname: "/" } };
-            history.replace(from);
+            .then((value) => {
+                console.log("Logged in")
+                const docRef = doc(db, "doctors", value.user.uid)
+
+                const docSnap = getDoc(docRef).then((value) => {
+                    if (value.exists()) {
+                        // setUser(value)
+                        setLoading(false)
+                        let { from } = location.state || { from: { pathname: "/" } };
+                        history.replace(from);
+                        return true
+                    } else {
+                        setError("Doctor Account not found")
+                        setLoading(false)
+
+
+                    }
+                })
+
+            })
+
             //don't need to manually navigate to logged in page here, because handled by PrivateRoute
         }
         catch (e){
-            
+
             setError(e.message)
+            setLoading(false)
+
         }
-        setLoading(false)
 
     }
 
