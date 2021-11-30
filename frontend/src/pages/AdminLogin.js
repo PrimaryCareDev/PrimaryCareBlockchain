@@ -8,14 +8,13 @@ import {doc, getFirestore, getDoc} from "firebase/firestore/lite";
 const DoctorLogin = () => {
     const emailRef = useRef()
     const passwordRef = useRef()
-    const { signin, setUserData, setUser } = useAuth()
+    const { signin, setUserData } = useAuth()
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const db = getFirestore();
 
     let location = useLocation();
-
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -26,7 +25,8 @@ const DoctorLogin = () => {
 
             await signin(emailRef.current.value, passwordRef.current.value)
             .then((value) => {
-                const docRef = doc(db, "doctors", value.user.uid)
+                console.log("Logged in")
+                const docRef = doc(db, "admin", value.user.uid)
 
                 const docSnap = getDoc(docRef).then((value) => {
                     if (value.exists()) {
@@ -37,13 +37,13 @@ const DoctorLogin = () => {
                         return true
                     } else {
                         setError("Doctor Account not found")
-                        setUser(null)
                         setUserData(null)
                         setLoading(false)
+
                     }
                 })
-            })
 
+            })
             //don't need to manually navigate to logged in page here, because handled by PrivateRoute
         }
         catch (e){
@@ -69,12 +69,12 @@ const DoctorLogin = () => {
                         src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
                         alt="Workflow"
                     />
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in as Doctor</h2>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Admin Sign In</h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Or{' '}
-                        <Link to="/doctorRegister" className="font-medium text-indigo-600 hover:text-indigo-500">
+                        <span className="font-medium text-indigo-600 hover:text-indigo-500">
                             sign up for an account
-                        </Link>
+                        </span>
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="mt-8 space-y-6" action="#" method="POST">

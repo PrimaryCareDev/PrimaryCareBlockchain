@@ -53,9 +53,9 @@ const HomePage = () => {
                                             {item.name}
                                         </a>
                                     ))}
-                                    <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                        Log in
-                                    </a>
+                                    <Link to="/admin" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                        Admin
+                                    </Link>
                                 </div>
                             </nav>
                         </div>
@@ -100,12 +100,12 @@ const HomePage = () => {
                                             </a>
                                         ))}
                                     </div>
-                                    <a
-                                        href="#"
+                                    <Link
+                                        to="/admin"
                                         className="block w-full px-5 py-3 text-center font-medium text-indigo-600 bg-gray-50 hover:bg-gray-100"
                                     >
-                                        Log in
-                                    </a>
+                                        Admin
+                                    </Link>
                                 </div>
                             </Popover.Panel>
                         </Transition>

@@ -91,6 +91,7 @@ export function AuthProvider({ children }) {
     // Return the user object and auth methods
     const value = {
         user,
+        setUser,
         userData,
         setUserData,
         signin,

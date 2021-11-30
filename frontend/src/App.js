@@ -11,9 +11,11 @@ import {
 import HomePage from "./pages/HomePage";
 import Doctor from './pages/Doctor';
 import DoctorLogin from './pages/DoctorLogin';
+import Admin from "./pages/Admin";
 import { AuthProvider, useAuth } from "./useAuth.js";
 import DoctorRegister from './pages/DoctorRegister';
 import DashboardProvider from './dashboard/provider/context'
+import AdminLogin from "./pages/AdminLogin";
 
 function App() {
 
@@ -29,6 +31,12 @@ function App() {
                         {/*<Route path="/admin/calendar" exact={true}>*/}
                         {/*    <CalendarPage/>*/}
                         {/*</Route>*/}
+                        <AdminPrivateRoute path="/admin">
+                            <Admin />
+                        </AdminPrivateRoute>
+                        <Route exact path="/adminLogin">
+                            <AdminLogin/>
+                        </Route>
                         <PrivateRoute path="/doctor">
                             <Doctor />
                         </PrivateRoute>
@@ -51,18 +59,43 @@ function App() {
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
 function PrivateRoute({ children, ...rest }) {
-    let { user } = useAuth();
+    let { userData } = useAuth();
 
     return (
         <Route
             {...rest}
             render={({ location }) =>
-                user ? (
+                userData ? (
                     children
                 ) : (
                     <Redirect
                         to={{
                             pathname: "/doctorLogin",
+                            state: { from: location }
+                        }}
+                    />
+                )
+
+            }
+        />
+    );
+}
+
+// A wrapper for <Route> that redirects to the login
+// screen if you're not yet authenticated.
+function AdminPrivateRoute({ children, ...rest }) {
+    let { userData } = useAuth();
+
+    return (
+        <Route
+            {...rest}
+            render={({ location }) =>
+                userData ? (
+                    children
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: "/adminLogin",
                             state: { from: location }
                         }}
                     />
