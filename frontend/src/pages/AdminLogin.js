@@ -1,18 +1,16 @@
-import React, { useRef, useState } from 'react'
-import { LockClosedIcon } from '@heroicons/react/solid'
-import { useAuth } from "../useAuth.js";
-import { useHistory, useLocation } from "react-router-dom"
-import { Link } from 'react-router-dom';
-import {doc, getFirestore, getDoc} from "firebase/firestore/lite";
+import React, {useRef, useState} from 'react'
+import {LockClosedIcon} from '@heroicons/react/solid'
+import {useAuth} from "../useAuth.js";
+import {useHistory, useLocation} from "react-router-dom"
+import {getFirestore} from "firebase/firestore/lite";
 
 const DoctorLogin = () => {
     const emailRef = useRef()
     const passwordRef = useRef()
-    const { signin, setUserData } = useAuth()
+    const {signin} = useAuth()
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
-    const db = getFirestore();
 
     let location = useLocation();
 
@@ -24,35 +22,15 @@ const DoctorLogin = () => {
             setLoading(true)
 
             await signin(emailRef.current.value, passwordRef.current.value)
-            .then((value) => {
-                console.log("Logged in")
-                const docRef = doc(db, "admin", value.user.uid)
+            let {from} = location.state || {from: {pathname: "/"}}
+            history.replace(from)
 
-                const docSnap = getDoc(docRef).then((value) => {
-                    if (value.exists()) {
-                        setUserData(value.data())
-                        setLoading(false)
-                        let { from } = location.state || { from: { pathname: "/" } };
-                        history.replace(from);
-                        return true
-                    } else {
-                        setError("Doctor Account not found")
-                        setUserData(null)
-                        setLoading(false)
-
-                    }
-                })
-
-            })
             //don't need to manually navigate to logged in page here, because handled by PrivateRoute
-        }
-        catch (e){
+        } catch (e) {
 
             setError(e.message)
             setLoading(false)
-
         }
-
     }
 
     function onAlertCloseClick() {
@@ -78,7 +56,7 @@ const DoctorLogin = () => {
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="mt-8 space-y-6" action="#" method="POST">
-                    <input type="hidden" name="remember" defaultValue="true" />
+                    <input type="hidden" name="remember" defaultValue="true"/>
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label htmlFor="email-address" className="sr-only">
@@ -134,11 +112,12 @@ const DoctorLogin = () => {
 
                     <div>
                         <button disabled={loading}
-                            type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                                type="submit"
+                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                         >
                             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                                <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
+                                <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+                                                aria-hidden="true"/>
                             </span>
                             Sign in
                         </button>
@@ -146,28 +125,26 @@ const DoctorLogin = () => {
                 </form>
 
                 {error &&
-                    <div className="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
+                <div className="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
                         <span className="text-xl inline-block mr-5 align-middle">
-                            <i className="fas fa-bell" />
+                            <i className="fas fa-bell"/>
                         </span>
-                        <span className="inline-block align-middle mr-8">
+                    <span className="inline-block align-middle mr-8">
                             <b className="capitalize">Error</b> {error}
                         </span>
-                        <button onClick={onAlertCloseClick} className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
-                            <span>×</span>
-                        </button>
-                    </div>
+                    <button onClick={onAlertCloseClick}
+                            className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
+                        <span>×</span>
+                    </button>
+                </div>
                 }
             </div>
 
         </div>
     )
 
-    
-
 
 }
-
 
 
 export default DoctorLogin
