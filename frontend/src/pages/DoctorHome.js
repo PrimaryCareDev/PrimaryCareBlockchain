@@ -8,7 +8,10 @@ import {useAuth} from "../useAuth";
 const DoctorHome = () => {
     const auth = getAuth()
     const db = getFirestore()
-    const { userData, setUserData } = useAuth()
+    const {userData, setUserData} = useAuth()
+    const [loading, setLoading] = useState(true)
+    const [isValidRole, setIsValidRole] = useState(false)
+
 
     async function getDoctorDetails() {
         try {
@@ -16,6 +19,11 @@ const DoctorHome = () => {
             const docSnap = await getDoc(docRef)
             if (docSnap.exists()) {
                 setUserData(docSnap.data())
+                setIsValidRole(true)
+                setLoading(false)
+            } else {
+                setUserData(null)
+                setIsValidRole(false)
                 setLoading(false)
             }
         } catch {
@@ -23,12 +31,10 @@ const DoctorHome = () => {
         }
     }
 
-    const [loading, setLoading] = useState(true)
     useEffect(() => {
         if (!userData) {
             getDoctorDetails()
-        }
-        else {
+        } else {
             setLoading(false)
         }
     }, []);
@@ -38,18 +44,23 @@ const DoctorHome = () => {
             {loading ?
                 <LoadingDots/>
                 :
-                <>
-                    <SectionTitle>Welcome Doctor {userData.email} </SectionTitle>
-                    {!userData.verified ? (
-                    <div className="bg-yellow-200 border-yellow-600 text-yellow-600 border-l-4 p-4" role="alert">
-                        <p className="font-bold">
-                            Your account has not been verified
-                        </p>
-                        <p>
-                            Please wait for an administrator to verify your account before you begin to use Healthlink
-                        </p>
-                    </div>) : null}
-                </>
+                [isValidRole ?
+                    <>
+                        <SectionTitle>Welcome Doctor {userData.email} </SectionTitle>
+                        {!userData.verified ? (
+                            <div className="bg-yellow-200 border-yellow-600 text-yellow-600 border-l-4 p-4"
+                                 role="alert">
+                                <p className="font-bold">
+                                    Your account has not been verified
+                                </p>
+                                <p>
+                                    Please wait for an administrator to verify your account before you begin to use
+                                    Healthlink
+                                </p>
+                            </div>) : null}
+                    </>
+                    : <>NOT VALID ROLE</>
+                ]
             }
         </>
 

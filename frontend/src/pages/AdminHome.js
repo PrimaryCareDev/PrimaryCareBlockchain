@@ -8,14 +8,21 @@ import {useAuth} from "../useAuth";
 const AdminHome = () => {
     const auth = getAuth()
     const db = getFirestore()
-    const { userData, setUserData } = useAuth()
+    const {userData, setUserData} = useAuth()
+    const [isValidRole, setIsValidRole] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     async function getAdminDetails() {
         try {
-            const docRef = doc(db, "admin", auth.currentUser.uid)
+            const docRef = doc(db, "admins", auth.currentUser.uid)
             const docSnap = await getDoc(docRef)
             if (docSnap.exists()) {
                 setUserData(docSnap.data())
+                setIsValidRole(true)
+                setLoading(false)
+            } else {
+                setUserData(null)
+                setIsValidRole(false)
                 setLoading(false)
             }
         } catch {
@@ -23,12 +30,10 @@ const AdminHome = () => {
         }
     }
 
-    const [loading, setLoading] = useState(true)
     useEffect(() => {
         if (!userData) {
             getAdminDetails()
-        }
-        else {
+        } else {
             setLoading(false)
         }
     }, []);
@@ -38,9 +43,13 @@ const AdminHome = () => {
             {loading ?
                 <LoadingDots/>
                 :
-                <>
-                    <SectionTitle>Welcome Admin {userData.email} </SectionTitle>
-                </>
+                [isValidRole ?
+                    <>
+                        <SectionTitle>Welcome Admin {userData.email} </SectionTitle>
+                    </>
+                    : <>NOT VALID ROLE</>
+                ]
+
             }
         </>
 

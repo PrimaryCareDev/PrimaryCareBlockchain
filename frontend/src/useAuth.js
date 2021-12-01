@@ -61,7 +61,6 @@ export function AuthProvider({ children }) {
     };
 
     const signout = () => {
-        setUserData(null)
         return signOut(auth)
     };
 
@@ -80,6 +79,9 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, user => {
             setUser(user)
+            if (!user) {
+                setUserData(null)
+            }
             setLoading(false)
 
         });

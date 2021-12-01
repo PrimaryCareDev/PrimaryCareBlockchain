@@ -31,13 +31,13 @@ function App() {
                         {/*<Route path="/admin/calendar" exact={true}>*/}
                         {/*    <CalendarPage/>*/}
                         {/*</Route>*/}
-                        <AdminPrivateRoute path="/admin">
+                        <PrivateRoute redirectTo="/adminLogin" path="/admin">
                             <Admin />
-                        </AdminPrivateRoute>
+                        </PrivateRoute>
                         <Route exact path="/adminLogin">
                             <AdminLogin/>
                         </Route>
-                        <PrivateRoute path="/doctor">
+                        <PrivateRoute redirectTo="/doctorLogin" path="/doctor">
                             <Doctor />
                         </PrivateRoute>
                         <Route exact path="/doctorLogin">
@@ -58,44 +58,19 @@ function App() {
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-function PrivateRoute({ children, ...rest }) {
-    let { userData } = useAuth();
+function PrivateRoute({ redirectTo, children, ...rest }) {
+    let { user } = useAuth();
 
     return (
         <Route
             {...rest}
             render={({ location }) =>
-                userData ? (
+                user ? (
                     children
                 ) : (
                     <Redirect
                         to={{
-                            pathname: "/doctorLogin",
-                            state: { from: location }
-                        }}
-                    />
-                )
-
-            }
-        />
-    );
-}
-
-// A wrapper for <Route> that redirects to the login
-// screen if you're not yet authenticated.
-function AdminPrivateRoute({ children, ...rest }) {
-    let { userData } = useAuth();
-
-    return (
-        <Route
-            {...rest}
-            render={({ location }) =>
-                userData ? (
-                    children
-                ) : (
-                    <Redirect
-                        to={{
-                            pathname: "/adminLogin",
+                            pathname: redirectTo,
                             state: { from: location }
                         }}
                     />
