@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Link, useLocation} from 'react-router-dom';
-import data from './data';
 import {useAuth} from "../../useAuth";
-import doctorNav from "./doctorNav";
-import adminNav from "./adminNav";
+import {doctorNav} from "./navData";
+import {adminNav} from "./navData";
 import {userType} from "../../constants";
 
 const style = {
@@ -22,21 +21,20 @@ const SidenavItems = () => {
 
     useEffect(() => {
 
-            console.log("ERKLEJRKJSDLF " + userData)
-            if (userData) {
-                switch (userData.role) {
-                    case userType.DOCTOR:
-                        setNavData(doctorNav)
-                        break
-                    case userType.ADMIN:
-                        setNavData(adminNav)
-                        break
-                }
-                setLoading(false)
-            } else {
-                setLoading(true)
-                setNavData(null)
+        if (userData) {
+            switch (userData.role) {
+                case userType.DOCTOR:
+                    setNavData(doctorNav)
+                    break
+                case userType.ADMIN:
+                    setNavData(adminNav)
+                    break
             }
+            setLoading(false)
+        } else {
+            setLoading(true)
+            setNavData(null)
+        }
 
     }, [userData]);
 
@@ -44,16 +42,18 @@ const SidenavItems = () => {
         <>
             {!loading ?
                 <ul>
-                    <li>
-                        {navData.map((item) => (
+
+                    {navData.map((item) => (
+                        <li key={item.link}>
                             <Link to={item.link} key={item.title}>
-            <span className={`${style.link} ${item.link === pathname && style.active}`}>
-              <span>{item.icon}</span>
-              <span className={style.title}>{item.title}</span>
-            </span>
+                                <span className={`${style.link} ${item.link === pathname && style.active}`}>
+                                  <span>{item.icon}</span>
+                                  <span className={style.title}>{item.title}</span>
+                                </span>
                             </Link>
-                        ))}
-                    </li>
+                        </li>
+                    ))}
+
                 </ul>
 
 

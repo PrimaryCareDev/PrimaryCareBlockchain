@@ -10,7 +10,7 @@ import {userType} from "../constants";
 import LoadingDots from "../components/LoadingDots";
 
 const Admin = () => {
-    let { path } = useRouteMatch();
+    let {path} = useRouteMatch();
     const {userData, setUserData} = useAuth()
     const [loading, setLoading] = useState(true)
     const [isValidRole, setIsValidRole] = useState(false)
@@ -22,7 +22,7 @@ const Admin = () => {
             const docRef = doc(db, "admins", auth.currentUser.uid)
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                setUserData({role:userType.ADMIN, ...docSnap.data()})
+                setUserData({role: userType.ADMIN, ...docSnap.data()})
                 setIsValidRole(true)
                 setLoading(false)
             } else {
@@ -45,19 +45,22 @@ const Admin = () => {
 
     return (
         <DashboardLayout>
-            {loading ?
-                <LoadingDots/>
+            {loading
+            ?
+            <LoadingDots/>
+            :
+            isValidRole
+                ?
+                <Switch>
+                    <Route path={`${path}`} exact={true}>
+                        <AdminHome/>
+                    </Route>
+                    <Route path={`${path}/pending`}>
+                        Approval List
+                    </Route>
+                </Switch>
                 :
-                [isValidRole ? <Switch>
-                        <Route path={`${path}`} exact={true}>
-                            <AdminHome/>
-                        </Route>
-                        <Route path={`${path}/pending`}>
-                            Approval List
-                        </Route>
-                    </Switch>
-                    : <>NOT VALID ROLE</>]
-
+                <>NOT VALID ROLE</>
             }
 
         </DashboardLayout>

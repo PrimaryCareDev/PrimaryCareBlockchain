@@ -7,7 +7,7 @@ import ProjectsIcon from './icons/projects';
 import TimeManageIcon from './icons/time-manage';
 import DocumentationIcon from './icons/documentation';
 
-const adminNav = [
+export const adminNav = [
   {
     title: 'Admin Home',
     icon: <HomeIcon />,
@@ -20,4 +20,16 @@ const adminNav = [
   },
 ];
 
-export default adminNav;
+export const doctorNav = [
+  {
+    title: 'Home',
+    icon: <HomeIcon />,
+    link: '/doctor',
+  },
+  {
+    title: 'Patients',
+    icon: <ProjectsIcon />,
+    link: '/doctor/patients',
+  },
+
+]

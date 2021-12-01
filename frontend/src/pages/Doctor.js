@@ -11,7 +11,7 @@ import {getAuth} from "@firebase/auth";
 import LoadingDots from "../components/LoadingDots";
 
 const Doctor = () => {
-    let { path } = useRouteMatch();
+    let {path} = useRouteMatch();
     const {userData, setUserData} = useAuth()
     const [loading, setLoading] = useState(true)
     const [isValidRole, setIsValidRole] = useState(false)
@@ -23,7 +23,7 @@ const Doctor = () => {
             const docRef = doc(db, "doctors", auth.currentUser.uid)
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                setUserData({role:userType.DOCTOR, ...docSnap.data()})
+                setUserData({role: userType.DOCTOR, ...docSnap.data()})
                 setIsValidRole(true)
                 setLoading(false)
             } else {
@@ -46,10 +46,13 @@ const Doctor = () => {
 
     return (
         <DashboardLayout>
-            {loading ?
-             <LoadingDots/>
-                :
-                [isValidRole ? <Switch>
+            {loading
+            ?
+            <LoadingDots/>
+            :
+            isValidRole
+                ?
+                <Switch>
                     <Route path={`${path}`} exact={true}>
                         <DoctorHome/>
                     </Route>
@@ -57,8 +60,8 @@ const Doctor = () => {
                         <DoctorPatientList/>
                     </Route>
                 </Switch>
-                    : <>NOT VALID ROLE</>]
-
+                :
+                <>NOT VALID ROLE</>
             }
 
         </DashboardLayout>
