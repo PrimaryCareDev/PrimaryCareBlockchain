@@ -30,8 +30,8 @@ const DoctorRegister = () => {
             await signup(emailRef.current.value, passwordRef.current.value)
             history.replace("/")
             history.push("/doctor")
-        } catch {
-            setError("Failed to create an account")
+        } catch (e){
+            setError(e.message)
         }
 
         setLoading(false)

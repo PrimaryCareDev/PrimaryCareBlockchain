@@ -1,9 +1,19 @@
 // Hook (use-auth.js)
-import React, { useState, useEffect, useContext, createContext } from "react";
-import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, setPersistence, browserSessionPersistence } from "firebase/auth";
+import React, {useState, useEffect, useContext, createContext} from "react";
+import {initializeApp} from 'firebase/app';
+import {
+    getAuth,
+    onAuthStateChanged,
+    signOut,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
+    confirmPasswordReset,
+    setPersistence,
+    browserSessionPersistence
+} from "firebase/auth";
 
-import { getFirestore, doc, setDoc } from "firebase/firestore/lite";
+import {getFirestore, doc, setDoc} from "firebase/firestore/lite";
 
 
 // Add your Firebase credentials
@@ -28,7 +38,7 @@ export const useAuth = () => {
 
 // Provider component that wraps your app and makes auth object ...
 // ... available to any child component that calls useAuth().
-export function AuthProvider({ children }) {
+export function AuthProvider({children}) {
 
     const [user, setUser] = useState(null);
     const [userData, setUserData] = useState(null);
@@ -44,20 +54,20 @@ export function AuthProvider({ children }) {
         return signInWithEmailAndPassword(auth, email, password)
     };
 
-    const signup = (email, password) => {
-        return createUserWithEmailAndPassword(auth, email, password)
-        .then((value) => {
-            try {
+    const signup = async (email, password) => {
+
+        return await createUserWithEmailAndPassword(auth, email, password)
+            .then(async (value) => {
+
                 const docRef = doc(db, "doctors", value.user.uid)
-                setDoc(docRef, {
-                  email: value.user.email,
-                  verified: false
+                await setDoc(docRef, {
+                    email: value.user.email,
+                    verified: false
                 });
                 console.log("Document written with ID: ", docRef.id);
-              } catch (e) {
-                console.error("Error adding document: ", e);
-              }
-        });
+
+            })
+
     };
 
     const signout = () => {
