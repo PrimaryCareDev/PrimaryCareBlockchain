@@ -54,7 +54,7 @@ export function AuthProvider({children}) {
         return signInWithEmailAndPassword(auth, email, password)
     };
 
-    const signup = async (email, password) => {
+    const doctorSignUp = async (email, password) => {
 
         return await createUserWithEmailAndPassword(auth, email, password)
             .then(async (value) => {
@@ -62,7 +62,8 @@ export function AuthProvider({children}) {
                 const docRef = doc(db, "doctors", value.user.uid)
                 await setDoc(docRef, {
                     email: value.user.email,
-                    verified: false
+                    verified: false,
+                    submittedForVerification: false
                 });
                 console.log("Document written with ID: ", docRef.id);
 
@@ -107,7 +108,7 @@ export function AuthProvider({children}) {
         userData,
         setUserData,
         signin,
-        signup,
+        doctorSignUp,
         signout,
         sendPasswordResetEmail,
         confirmPasswordReset,

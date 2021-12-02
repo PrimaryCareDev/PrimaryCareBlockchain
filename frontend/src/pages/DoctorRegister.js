@@ -9,13 +9,10 @@ const DoctorRegister = () => {
     const passwordRef = useRef()
     const passwordConfirmRef = useRef()
 
-    const { signup } = useAuth()
+    const { doctorSignup } = useAuth()
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
-
-    let location = useLocation();
-
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -27,7 +24,7 @@ const DoctorRegister = () => {
         try {
             setError("")
             setLoading(true)
-            await signup(emailRef.current.value, passwordRef.current.value)
+            await doctorSignup(emailRef.current.value, passwordRef.current.value)
             history.replace("/")
             history.push("/doctor")
         } catch (e){

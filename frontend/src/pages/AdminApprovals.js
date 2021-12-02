@@ -5,7 +5,6 @@ import TableCell from "../components/TableCell";
 import TableBody from "../components/TableBody";
 import TableRow from "../components/TableRow";
 import TableFooter from "../components/TableFooter";
-import Pagination from "../components/Pagination";
 import TableContainer from "../components/TableContainer";
 import {getDocs, collection, query, where, getFirestore,orderBy, limit, limitToLast, startAfter, endBefore, endAt} from "firebase/firestore/lite";
 import LoadingDots from "../components/LoadingDots";
@@ -15,7 +14,6 @@ import TableNav from "../components/TableNav";
 
 const AdminApprovals = () => {
 
-    const [pageTable, setPageTable] = useState(1)
     const[loading, setLoading] = useState(true)
     const[dataTable, setDataTable] = useState(true)
     const db = getFirestore()
