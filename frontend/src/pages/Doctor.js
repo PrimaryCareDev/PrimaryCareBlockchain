@@ -7,7 +7,7 @@ import DoctorPatientList from "./DoctorPatientList";
 import {useAuth} from "../useAuth";
 import {doc, getDoc, getFirestore} from "firebase/firestore/lite";
 import {userType} from "../constants";
-import {getAuth} from "@firebase/auth";
+import {getAuth} from "firebase/auth";
 import LoadingDots from "../components/LoadingDots";
 
 const Doctor = () => {

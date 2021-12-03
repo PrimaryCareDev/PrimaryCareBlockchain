@@ -1,10 +1,10 @@
 import React, {useEffect} from 'react';
-import {useForm} from "react-hook-form";
+import {useForm, useFormContext} from "react-hook-form";
 import {useDropzone} from "react-dropzone";
 
 const FileDropzone = (props) => {
     const {name, accept} = props
-    const {register, unregister, setValue, watch} = useForm();
+    const {register, unregister, setValue, watch} = useFormContext();
 
     useEffect(() => {
         register(name, {required: true});
@@ -21,7 +21,6 @@ const FileDropzone = (props) => {
         onDrop: acceptedFiles => {
             const firstFile = acceptedFiles[0]
             if (firstFile) {
-                console.log(URL.createObjectURL(firstFile))
                 setValue(name, firstFile, {shouldValidate: true});
                 // uploadBytes(storageRef, file).then((snapshot) => {
                 //     console.log(snapshot.ref.fullPath)
