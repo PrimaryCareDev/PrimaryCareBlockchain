@@ -3,6 +3,7 @@ import {FormProvider, useForm} from "react-hook-form"
 import {getStorage, ref, uploadBytes} from "firebase/storage";
 import FileDropzone from "../components/FileDropzone";
 import {useAuth} from "../useAuth";
+import classnames from 'classnames';
 
 const DoctorVerificationForm = () => {
     const methods = useForm({mode: "onBlur"});
@@ -72,10 +73,15 @@ const DoctorVerificationForm = () => {
                                         name="first-name"
                                         id="first-name"
                                         autoComplete="given-name"
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        // className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        className={classnames('mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md',
+                                            {
+                                                'border-red-500': errors.firstName
+                                            }
+                                            )}
                                         {...register("firstName", {required: true, maxLength: 2})}
                                     />
-                                    {errors.firstName && <p>First name is required</p>}
+                                    {errors.firstName && <p className="block text-sm font-medium text-red-700 mt-3">First name is required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -126,7 +132,7 @@ const DoctorVerificationForm = () => {
                                     {/*    </div>*/}
                                     {/*</div>*/}
                                     <FileDropzone accept="image/*" name="idImage"/>
-                                    {errors.idImage && <p>ID IMAGE MISSING</p>}
+                                    {errors.idImage && <p className="block text-sm font-medium text-red-700 mt-3">Identification image is required</p>}
 
                                 </div>
 
