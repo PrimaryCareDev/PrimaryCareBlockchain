@@ -8,7 +8,7 @@ const button = {
     size: {
       larger: 'px-10 py-4 rounded-lg',
       large: 'px-5 py-3 rounded-lg',
-      regular: 'px-4 py-2 rounded-lg text-sm',
+      regular: 'px-4 py-2 rounded-md text-sm',
       small: 'px-3 py-1 rounded-md text-sm',
       icon: {
         larger: 'p-4 rounded-lg',
@@ -28,8 +28,8 @@ const button = {
       right: 'ml-2 -mr-1',
     },
     primary: {
-      base: 'text-white bg-purple-600 border border-transparent',
-      active: 'active:bg-purple-600 hover:bg-purple-700 focus:ring focus:ring-purple-300',
+      base: 'text-white bg-indigo-600 border border-transparent',
+      active: 'hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
       disabled: 'opacity-50 cursor-not-allowed',
     },
     outline: {

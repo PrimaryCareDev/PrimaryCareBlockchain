@@ -4,6 +4,7 @@ import {getStorage, ref, uploadBytes} from "firebase/storage";
 import FileDropzone from "../components/FileDropzone";
 import {useAuth} from "../useAuth";
 import classnames from 'classnames';
+import Button from "../components/Button";
 
 const DoctorVerificationForm = () => {
     const methods = useForm({mode: "onBlur"});
@@ -97,7 +98,7 @@ const DoctorVerificationForm = () => {
                                     />
                                 </div>
 
-                                <div className="col-span-6 sm:col-span-4">
+                                <div className="col-span-3">
                                     <label className="block text-sm font-medium text-gray-700">Identification</label>
                                     {/*<div {...getRootProps({className: "mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"})} >*/}
                                     {/*    /!*<div {...getRootProps()} className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">*!/*/}
@@ -226,6 +227,7 @@ const DoctorVerificationForm = () => {
                             >
                                 Save
                             </button>
+
                         </div>
                     </div>
                 </form>

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {useForm, useFormContext} from "react-hook-form";
+import {useFormContext} from "react-hook-form";
 import {useDropzone} from "react-dropzone";
+import Button from "./Button";
 
 const FileDropzone = (props) => {
         const {name, accept} = props
@@ -32,13 +33,19 @@ const FileDropzone = (props) => {
             }
         })
 
-        
+        function clearPreview() {
+            console.log("CLEARING PREVIEW")
+        }
 
         return (
             <>
                 {file ?
-                    <button onClick={}
-                    <img src={filePreview} className="w-2/3 hover:blur-xl"/> :
+                    <>
+                        <Button onClick={clearPreview}>Save</Button>
+                        <img src={filePreview} alt="id image preview"/>
+                    </>
+
+                     :
                     <></>}
                 <div {...getRootProps({className: "mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"})} >
                     <div className="space-y-1 text-center">
