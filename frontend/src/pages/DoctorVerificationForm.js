@@ -4,14 +4,15 @@ import {getStorage, ref, uploadBytes} from "firebase/storage";
 import FileDropzone from "../components/FileDropzone";
 import {useAuth} from "../useAuth";
 import classnames from 'classnames';
+import {doc, getFirestore, updateDoc} from "firebase/firestore/lite";
 import Button from "../components/Button";
 
 const DoctorVerificationForm = () => {
     const methods = useForm({mode: "onBlur"});
-    const {register, unregister, setValue, formState:{errors}, handleSubmit} = methods;
-    const [identificationImage, setIdentificationImage] = useState(null)
+    const {register, unregister, setValue, formState: {errors}, handleSubmit} = methods;
+    const [submitting, setSubmitting] = useState(false)
     const {user} = useAuth()
-
+    const db = getFirestore();
 
     const storage = getStorage();
     const storageRef = ref(storage, 'images/identification/' + user.uid);
@@ -49,13 +50,25 @@ const DoctorVerificationForm = () => {
     // }, [identificationImage]);
 
 
-    function onSubmit(data) {
+    async function onSubmit(data) {
         console.log(data);
+        try {
+            setSubmitting(true)
+            await uploadBytes(storageRef, data.idImage).then((snapshot) => {
+                console.log(snapshot.ref.fullPath)
+            });
+            const docRef = doc(db, "doctors", user.uid)
+            await updateDoc(docRef, {
+                submittedForVerification: true,
+                firstName: data.firstName
+            });
+            setSubmitting(false)
 
-        uploadBytes(storageRef, data.idImage).then((snapshot) => {
-            console.log(snapshot.ref.fullPath)
-            console.log('Uploaded a blob or file!');
-        });
+
+        } catch (e) {
+            console.log(e.message)
+        }
+
     }
 
     return (
@@ -79,10 +92,12 @@ const DoctorVerificationForm = () => {
                                             {
                                                 'border-red-500': errors.firstName
                                             }
-                                            )}
-                                        {...register("firstName", {required: true, maxLength: 2})}
+                                        )}
+                                        {...register("firstName", {required: true})}
                                     />
-                                    {errors.firstName && <p className="block text-sm font-medium text-red-700 mt-3">First name is required</p>}
+                                    {errors.firstName &&
+                                    <p className="block text-sm font-medium text-red-700 mt-3">First name is
+                                        required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -133,7 +148,9 @@ const DoctorVerificationForm = () => {
                                     {/*    </div>*/}
                                     {/*</div>*/}
                                     <FileDropzone accept="image/*" name="idImage"/>
-                                    {errors.idImage && <p className="block text-sm font-medium text-red-700 mt-3">Identification image is required</p>}
+                                    {errors.idImage &&
+                                    <p className="block text-sm font-medium text-red-700 mt-3">Identification image is
+                                        required</p>}
 
                                 </div>
 
@@ -221,12 +238,13 @@ const DoctorVerificationForm = () => {
                             </div>
                         </div>
                         <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                            <button
-                                type="submit"
-                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                Save
-                            </button>
+                            {/*<button*/}
+                            {/*    type="submit"*/}
+                            {/*    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"*/}
+                            {/*>*/}
+                            {/*    Save*/}
+                            {/*</button>*/}
+                            <Button type="submit" disabled={submitting}>Save</Button>
 
                         </div>
                     </div>
