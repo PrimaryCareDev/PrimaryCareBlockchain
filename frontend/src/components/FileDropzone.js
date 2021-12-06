@@ -20,6 +20,10 @@ const FileDropzone = (props) => {
             maxFiles: 1,
             accept: accept,
             onDrop: acceptedFiles => {
+                if (filePreview) {
+                    //if there is an existing file, revoke object URL
+                    URL.revokeObjectURL(filePreview)
+                }
                 const firstFile = acceptedFiles[0]
                 if (firstFile) {
                     setValue(name, firstFile, {shouldValidate: true});
