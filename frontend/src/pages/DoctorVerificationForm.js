@@ -9,7 +9,7 @@ import Button from "../components/Button";
 
 const DoctorVerificationForm = () => {
     const methods = useForm({mode: "onBlur"});
-    const {register, unregister, setValue, formState: {errors}, handleSubmit} = methods;
+    const {register, formState: {errors}, handleSubmit} = methods;
     const [submitting, setSubmitting] = useState(false)
     const {user} = useAuth()
     const db = getFirestore();

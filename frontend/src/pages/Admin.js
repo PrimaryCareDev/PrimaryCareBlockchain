@@ -9,6 +9,7 @@ import {doc, getDoc, getFirestore} from "firebase/firestore/lite";
 import {userType} from "../constants";
 import LoadingDots from "../components/LoadingDots";
 import AdminApprovals from "./AdminApprovals";
+import AdminApprovalDetails from "./AdminApprovalDetails";
 
 const Admin = () => {
     let {path} = useRouteMatch();
@@ -56,8 +57,11 @@ const Admin = () => {
                     <Route path={`${path}`} exact={true}>
                         <AdminHome/>
                     </Route>
-                    <Route path={`${path}/pending`}>
+                    <Route exact path={`${path}/pending`}>
                         <AdminApprovals/>
+                    </Route>
+                    <Route exact path={`${path}/pending/details`}>
+                        <AdminApprovalDetails/>
                     </Route>
                 </Switch>
                 :
