@@ -54,7 +54,7 @@ const Doctor = () => {
                 ?
                 <Switch>
                     <Route path={`${path}`} exact={true}>
-                        <DoctorHome/>
+                        <DoctorHome onSubmitRegistration={getDoctorDetails}/>
                     </Route>
                     <Route path={`${path}/patients`}>
                         <DoctorPatientList/>
