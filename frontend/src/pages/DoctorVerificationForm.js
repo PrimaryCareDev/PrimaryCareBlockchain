@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {FormProvider, useForm} from "react-hook-form"
-import {getStorage, ref, uploadBytes} from "firebase/storage";
+import {getStorage, ref, uploadBytes, getDownloadURL} from "firebase/storage";
 import FileDropzone from "../components/FileDropzone";
 import {useAuth} from "../useAuth";
 import classnames from 'classnames';
@@ -15,7 +15,6 @@ const DoctorVerificationForm = () => {
     const db = getFirestore();
 
     const storage = getStorage();
-    const storageRef = ref(storage, 'images/identification/' + user.uid);
 
     // useEffect(() => {
     //     register(idImageName, {required: true});
@@ -54,13 +53,23 @@ const DoctorVerificationForm = () => {
         console.log(data);
         try {
             setSubmitting(true)
-            await uploadBytes(storageRef, data.idImage).then((snapshot) => {
-                console.log(snapshot.ref.fullPath)
-            });
+            const idStorageRef = ref(storage, 'images/identification/' + user.uid);
+            const licenseStorageRef = ref(storage, 'images/licenses/' + user.uid);
+
+            const idImageUpload = await uploadBytes(idStorageRef, data.idImage)
+            const idImageURL = await getDownloadURL(idImageUpload.ref)
+
+            const licenseImageUpload = await uploadBytes(licenseStorageRef, data.licenseImage)
+            const licenseImageURL = await getDownloadURL(licenseImageUpload.ref)
             const docRef = doc(db, "doctors", user.uid)
             await updateDoc(docRef, {
                 submittedForVerification: true,
-                firstName: data.firstName
+                firstName: data.firstName,
+                lastName: data.lastName,
+                medicalPractice: data.medicalPractice,
+                medicalLicenseNumber: data.licenseNumber,
+                idImageUrl: idImageURL,
+                licenseImageUrl: licenseImageURL
             });
             setSubmitting(false)
 
@@ -72,7 +81,7 @@ const DoctorVerificationForm = () => {
     }
 
     return (
-        <div className="max-w-7xl mt-5 md:mt-0">
+        <div className="max-w-6xl mt-5 md:mt-0 justify-self-center">
             <FormProvider {...methods} >
                 <form onSubmit={handleSubmit(onSubmit)} method="POST">
                     <div className="shadow overflow-hidden sm:rounded-md">
@@ -96,7 +105,7 @@ const DoctorVerificationForm = () => {
                                         {...register("firstName", {required: true})}
                                     />
                                     {errors.firstName &&
-                                    <p className="block text-sm font-medium text-red-700 mt-3">First name is
+                                    <p className="block text-sm font-medium text-red-700 mt-2">First name is
                                         required</p>}
                                 </div>
 
@@ -109,65 +118,73 @@ const DoctorVerificationForm = () => {
                                         name="last-name"
                                         id="last-name"
                                         autoComplete="family-name"
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        className={classnames('mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md',
+                                            {
+                                                'border-red-500': errors.lastName
+                                            }
+                                        )}
+                                        {...register("lastName", {required: true})}
                                     />
+                                    {errors.lastName &&
+                                    <p className="block text-sm font-medium text-red-700 mt-2">Last name is required</p>}
                                 </div>
 
-                                <div className="col-span-3">
-                                    <label className="block text-sm font-medium text-gray-700">Identification</label>
-                                    {/*<div {...getRootProps({className: "mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"})} >*/}
-                                    {/*    /!*<div {...getRootProps()} className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">*!/*/}
-                                    {/*    <div className="space-y-1 text-center">*/}
-                                    {/*        <svg*/}
-                                    {/*            className="mx-auto h-12 w-12 text-gray-400"*/}
-                                    {/*            stroke="currentColor"*/}
-                                    {/*            fill="none"*/}
-                                    {/*            viewBox="0 0 48 48"*/}
-                                    {/*            aria-hidden="true"*/}
-                                    {/*        >*/}
-                                    {/*            <path*/}
-                                    {/*                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"*/}
-                                    {/*                strokeWidth={2}*/}
-                                    {/*                strokeLinecap="round"*/}
-                                    {/*                strokeLinejoin="round"*/}
-                                    {/*            />*/}
-                                    {/*        </svg>*/}
-                                    {/*        <div className="flex text-sm text-gray-600">*/}
-                                    {/*            <label*/}
-                                    {/*                htmlFor="file-upload"*/}
-                                    {/*                className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"*/}
-                                    {/*            >*/}
-                                    {/*                <span>Upload a file</span>*/}
-                                    {/*                /!*<input {...getInputProps()} id="file-upload" name="file-upload" type="file" className="sr-only" />*!/*/}
-                                    {/*                <input  id="file-upload" name="idImageName"*/}
-                                    {/*                       type="file" className="sr-only" {...getInputProps()} />*/}
-                                    {/*            </label>*/}
-                                    {/*            <p className="pl-1">or drag and drop</p>*/}
-                                    {/*        </div>*/}
-                                    {/*        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>*/}
-                                    {/*    </div>*/}
-                                    {/*</div>*/}
-                                    <FileDropzone accept="image/*" name="idImage"/>
-                                    {errors.idImage &&
-                                    <p className="block text-sm font-medium text-red-700 mt-3">Identification image is
-                                        required</p>}
-
-                                </div>
-
-
-                                <div className="col-span-6 sm:col-span-4">
+                                <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
-                                        Email address
+                                        Practice/Clinic Name
                                     </label>
                                     <input
                                         type="text"
                                         name="email-address"
                                         id="email-address"
                                         autoComplete="email"
-                                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        className={classnames('mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md',
+                                            {
+                                                'border-red-500': errors.medicalPractice
+                                            }
+                                        )}
+                                        {...register("medicalPractice", {required: true})}
                                     />
+                                    {errors.medicalPractice &&
+                                    <p className="block text-sm font-medium text-red-700 mt-2">Medical practice is required</p>}
                                 </div>
 
+                                <div className="col-span-6 sm:col-span-3">
+                                    <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+                                        Medical Registration/License Number (e.g. MCR)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="email-address"
+                                        id="email-address"
+                                        autoComplete="email"
+                                        className={classnames('mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md',
+                                            {
+                                                'border-red-500': errors.licenseNumber
+                                            }
+                                        )}
+                                        {...register("licenseNumber", {required: true})}
+                                    />
+                                    {errors.licenseNumber &&
+                                    <p className="block text-sm font-medium text-red-700 mt-2">License number is required</p>}
+                                </div>
+
+                                <div className="col-span-6 sm:col-span-3">
+                                    <label className="block text-sm font-medium text-gray-700">Identification Image</label>
+                                    <FileDropzone accept="image/*" name="idImage"/>
+                                    {errors.idImage &&
+                                    <p className="block text-sm font-medium text-red-700 mt-3">Identification image is
+                                        required</p>}
+                                </div>
+
+                                <div className="col-span-6 sm:col-span-3">
+                                    <label className="block text-sm font-medium text-gray-700">Medical License Image</label>
+                                    <FileDropzone accept="image/*" name="licenseImage"/>
+                                    {errors.licenseImage &&
+                                    <p className="block text-sm font-medium text-red-700 mt-3">Medical license image is
+                                        required</p>}
+                                </div>
+                                
                                 <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                         Country
