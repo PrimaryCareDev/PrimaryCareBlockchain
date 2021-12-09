@@ -9,7 +9,7 @@ import {useHistory} from "react-router-dom";
 export default function TopNavigation() {
     const {toggle} = useToggle();
 
-    const {signout} = useAuth()
+    const {signout, user} = useAuth()
     const history = useHistory()
 
     async function handleLogout(e) {
@@ -51,14 +51,14 @@ export default function TopNavigation() {
                     <Menu as="div" className="ml-3 relative">
                         <div>
                             <Menu.Button
-                                className=" flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                className=" flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-gray-700 focus:ring-white">
                                 <span className="sr-only">Open user menu</span>
                                 {/*<img*/}
                                 {/*    className="h-12 w-12 rounded-full"*/}
                                 {/*    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"*/}
                                 {/*    alt=""*/}
                                 {/*/>*/}
-                                <UserCircleIcon className="h-10 w-10 rounded-full"/>
+                                <UserCircleIcon className="text-gray-700 h-10 w-10"/>
                             </Menu.Button>
                         </div>
                         <Transition
@@ -70,8 +70,31 @@ export default function TopNavigation() {
                             leaveFrom="transform opacity-100 scale-100"
                             leaveTo="transform opacity-0 scale-95"
                         >
+
                             <Menu.Items
-                                className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg divide-y divide-gray-100 py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div className="px-4 py-3">
+                                    <p className="text-sm leading-5">Signed in as</p>
+                                    <p className="text-sm font-medium leading-5 text-gray-900 truncate">
+                                        {user.email}
+                                    </p>
+                                </div>
+                                <div className="py-1">
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <a
+                                                href="#account-settings"
+                                                className={`${
+                                                    active
+                                                        ? "bg-gray-100 text-gray-900"
+                                                        : "text-gray-700"
+                                                } flex justify-between w-full px-4 py-2 text-sm leading-5 text-left`}
+                                            >
+                                                Account settings
+                                            </a>
+                                        )}
+                                    </Menu.Item>
+                                </div>
                                 <Menu.Item>
                                     {({active}) => (
                                         <a
