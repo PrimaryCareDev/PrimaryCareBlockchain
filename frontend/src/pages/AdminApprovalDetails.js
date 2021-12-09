@@ -158,7 +158,7 @@ const AdminApprovalDetails = () => {
                                             {idImageLoading && <LoadingSpinner/>}
                                             <img src={details.idImageUrl}
                                                  onLoad={() => setIdImageLoading(false)}
-                                                 className="max-w-xl w-full" alt="Identification image"/>
+                                                 className="max-w-xl" alt="Identification image"/>
                                         </dd>
                                     </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -167,7 +167,7 @@ const AdminApprovalDetails = () => {
                                             {licenseImageLoading && <LoadingSpinner/>}
                                             <img src={details.licenseImageUrl}
                                                  onLoad={() => setLicenseImageLoading(false)}
-                                                 className="max-w-xl w-full" alt="License image"/>
+                                                 className="max-w-xl" alt="License image"/>
                                         </dd>
                                     </div>
                                 </dl>

@@ -1,37 +1,59 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {FormProvider, useForm} from "react-hook-form"
-import {getStorage, ref, uploadBytes, getDownloadURL} from "firebase/storage";
+import {getDownloadURL, getStorage, ref, uploadBytes, uploadString} from "firebase/storage";
 import FileDropzone from "../components/FileDropzone";
 import {useAuth} from "../useAuth";
 import classnames from 'classnames';
 import {doc, getFirestore, updateDoc} from "firebase/firestore/lite";
 import Button from "../components/Button";
-import LoadingSpinner from "../components/LoadingSpinner";
-import LoadingDots from "../components/LoadingDots";
 import SmallLoadingSpinner from "../components/SmallLoadingSpinner";
-import {ClipboardIcon} from "@heroicons/react/solid";
+import AvatarEditor from "react-avatar-editor";
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import {UserCircleIcon, ZoomInIcon, ZoomOutIcon} from "@heroicons/react/solid";
 
 const DoctorVerificationForm = (props) => {
     const methods = useForm({mode: "onBlur"});
     const {register, formState: {errors}, handleSubmit} = methods;
     const [submitting, setSubmitting] = useState(false)
+    const [avatarImage, setAvatarImage] = useState()
+    const [avatarImageScale, setAvatarImageScale] = useState(1.2)
     const {user} = useAuth()
     const db = getFirestore();
     const storage = getStorage();
+    const avatarImageInput = useRef(null)
+    const avatarImageEditor = useRef(null)
 
     async function onSubmit(data) {
-        console.log(data);
+        // console.log(data);
         try {
+
             setSubmitting(true)
+
             const idStorageRef = ref(storage, 'images/identification/' + user.uid);
             const licenseStorageRef = ref(storage, 'images/licenses/' + user.uid);
+            const avatarStorageRef = ref(storage, 'images/avatars/' + user.uid);
 
             const idImageUpload = await uploadBytes(idStorageRef, data.idImage)
             const idImageURL = await getDownloadURL(idImageUpload.ref)
 
+            let avatarImageURL = "";
+            let avatarDataUrl;
+            if (avatarImageEditor) {
+                avatarDataUrl = avatarImageEditor.current.getImageScaledToCanvas().toDataURL()
+            }
+
+            if (avatarDataUrl) {
+                const avatarImageUpload = await uploadString(avatarStorageRef, avatarDataUrl, 'data_url')
+
+                avatarImageURL = await getDownloadURL(avatarImageUpload.ref)
+
+            }
+
             const licenseImageUpload = await uploadBytes(licenseStorageRef, data.licenseImage)
             const licenseImageURL = await getDownloadURL(licenseImageUpload.ref)
             const docRef = doc(db, "doctors", user.uid)
+
             await updateDoc(docRef, {
                 submittedForVerification: true,
                 firstName: data.firstName,
@@ -39,15 +61,26 @@ const DoctorVerificationForm = (props) => {
                 medicalPractice: data.medicalPractice,
                 medicalLicenseNumber: data.licenseNumber,
                 idImageUrl: idImageURL,
-                licenseImageUrl: licenseImageURL
+                licenseImageUrl: licenseImageURL,
+                avatarImageUrl: avatarImageURL
             });
-            setSubmitting(false)
+
             props.onSubmitRegistration()
+            setSubmitting(false)
+
 
         } catch (e) {
             console.log(e.message)
         }
 
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function onScaleChange(value) {
+        setAvatarImageScale(value)
     }
 
     return (
@@ -57,6 +90,44 @@ const DoctorVerificationForm = (props) => {
                     <div className="shadow overflow-hidden sm:rounded-md">
                         <div className="px-4 py-5 bg-white sm:p-6">
                             <div className="grid grid-cols-6 gap-6">
+
+                                <div className="col-span-6 grid grid-cols-4">
+                                    <div className="col-span-4 sm:col-span-1 grid">
+                                        <label htmlFor="first-name" className="block text-md font-medium text-gray-700">
+                                            Profile Picture
+                                        </label>
+                                        <div>
+
+                                            {avatarImage ?
+                                                <>
+                                                    <AvatarEditor
+                                                        ref={avatarImageEditor}
+                                                        className="justify-self-center"
+                                                        color={[0, 0, 0, 0.6]} // RGBA
+                                                        scale={avatarImageScale}
+                                                        rotate={0}
+                                                        image={avatarImage}/>
+
+                                                    <div className="flex items-center mt-2">
+                                                        <ZoomOutIcon className="h-5 w-5 text-gray-600 "/>
+                                                        <Slider className="mx-3" min={1} max={2} step={0.01}
+                                                                defaultValue={1.2}
+                                                                onChange={onScaleChange}/>
+                                                        <ZoomInIcon className="h-5 w-5 text-gray-600"/>
+                                                    </div>
+                                                </>
+                                                :
+                                                <UserCircleIcon className="w-12 h-12 text-gray-600"/>
+                                            }
+                                            <Button className="my-2 justify-self-start"
+                                                    onClick={() => avatarImageInput.current.click()}>Browse</Button>
+                                            <input type="file" accept="image/*" className="hidden"
+                                                   ref={avatarImageInput}
+                                                   onChange={(e) => setAvatarImage(e.target.files[0])}/>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
                                         First name
@@ -96,7 +167,8 @@ const DoctorVerificationForm = (props) => {
                                         {...register("lastName", {required: true})}
                                     />
                                     {errors.lastName &&
-                                    <p className="block text-sm font-medium text-red-700 mt-2">Last name is required</p>}
+                                    <p className="block text-sm font-medium text-red-700 mt-2">Last name is
+                                        required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -116,7 +188,8 @@ const DoctorVerificationForm = (props) => {
                                         {...register("medicalPractice", {required: true})}
                                     />
                                     {errors.medicalPractice &&
-                                    <p className="block text-sm font-medium text-red-700 mt-2">Medical practice is required</p>}
+                                    <p className="block text-sm font-medium text-red-700 mt-2">Medical practice is
+                                        required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -136,11 +209,13 @@ const DoctorVerificationForm = (props) => {
                                         {...register("licenseNumber", {required: true})}
                                     />
                                     {errors.licenseNumber &&
-                                    <p className="block text-sm font-medium text-red-700 mt-2">License number is required</p>}
+                                    <p className="block text-sm font-medium text-red-700 mt-2">License number is
+                                        required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label className="block text-sm font-medium text-gray-700">Identification Image</label>
+                                    <label className="block text-sm font-medium text-gray-700">Identification
+                                        Image</label>
                                     <FileDropzone accept="image/*" name="idImage"/>
                                     {errors.idImage &&
                                     <p className="block text-sm font-medium text-red-700 mt-3">Identification image is
@@ -148,7 +223,8 @@ const DoctorVerificationForm = (props) => {
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label className="block text-sm font-medium text-gray-700">Medical License Image</label>
+                                    <label className="block text-sm font-medium text-gray-700">Medical License
+                                        Image</label>
                                     <FileDropzone accept="image/*" name="licenseImage"/>
                                     {errors.licenseImage &&
                                     <p className="block text-sm font-medium text-red-700 mt-3">Medical license image is
@@ -158,7 +234,8 @@ const DoctorVerificationForm = (props) => {
                         </div>
                         <div className="px-4 py-3 bg-gray-50 text-right flex justify-end items-center gap-3 sm:px-6">
 
-                            <Button type="submit" disabled={submitting}>{submitting && <SmallLoadingSpinner className="h-5 w-5 mr-2 -ml-1"/>}Save</Button>
+                            <Button type="submit" disabled={submitting}>{submitting &&
+                            <SmallLoadingSpinner className="h-5 w-5 mr-2 -ml-1"/>}Save</Button>
 
                         </div>
                     </div>
