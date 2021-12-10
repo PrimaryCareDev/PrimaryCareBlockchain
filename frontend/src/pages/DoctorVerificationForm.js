@@ -74,11 +74,6 @@ const DoctorVerificationForm = (props) => {
         }
 
     }
-
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     function onScaleChange(value) {
         setAvatarImageScale(value)
     }

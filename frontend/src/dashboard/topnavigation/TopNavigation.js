@@ -1,16 +1,28 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {useToggle} from '../provider/context';
 import {Menu, Transition} from '@headlessui/react'
 import classNames from "classnames";
 import {MenuIcon, UserCircleIcon} from "@heroicons/react/solid";
 import {useAuth} from "../../useAuth";
 import {useHistory} from "react-router-dom";
+import {getFirestore} from "firebase/firestore/lite";
 
 export default function TopNavigation() {
     const {toggle} = useToggle();
+    const [avatarImageUrl, setAvatarImageUrl] = useState("")
+    const [avatarLoading, setAvatarLoading] = useState(true)
 
     const {signout, user} = useAuth()
     const history = useHistory()
+    const {userData} = useAuth()
+
+    useEffect(() => {
+
+        if (userData) {
+            setAvatarImageUrl(userData.avatarImageUrl)
+        }
+
+    }, [userData]);
 
     async function handleLogout(e) {
         e.preventDefault()
@@ -49,16 +61,28 @@ export default function TopNavigation() {
                 <div
                     className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                     <Menu as="div" className="ml-3 relative">
+
                         <div>
                             <Menu.Button
                                 className=" flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-gray-700 focus:ring-white">
-                                <span className="sr-only">Open user menu</span>
-                                {/*<img*/}
-                                {/*    className="h-12 w-12 rounded-full"*/}
-                                {/*    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"*/}
-                                {/*    alt=""*/}
-                                {/*/>*/}
-                                <UserCircleIcon className="text-gray-700 h-10 w-10"/>
+                                {/*<span className="sr-only">Open user menu</span>*/}
+                                {avatarImageUrl ?
+                                    <>
+                                        {avatarLoading && <UserCircleIcon className="text-gray-700 h-12 w-12"/>}
+                                            <img
+                                                src={avatarImageUrl}
+                                                onLoad={() => setAvatarLoading(false)}
+                                                className={classNames(avatarLoading && "hidden", "h-12 w-12 rounded-full")}
+                                                alt="Avatar Image"
+                                            />
+                                            </>
+
+                                    :
+                                    <UserCircleIcon className="text-gray-700 h-12 w-12"/>
+
+                                }
+
+
                             </Menu.Button>
                         </div>
                         <Transition
