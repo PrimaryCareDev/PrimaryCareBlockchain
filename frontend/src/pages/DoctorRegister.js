@@ -9,7 +9,7 @@ const DoctorRegister = () => {
     const passwordRef = useRef()
     const passwordConfirmRef = useRef()
 
-    const { doctorSignup } = useAuth()
+    const { doctorSignUp } = useAuth()
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
@@ -24,7 +24,7 @@ const DoctorRegister = () => {
         try {
             setError("")
             setLoading(true)
-            await doctorSignup(emailRef.current.value, passwordRef.current.value)
+            await doctorSignUp(emailRef.current.value, passwordRef.current.value)
             history.replace("/")
             history.push("/doctor")
         } catch (e){
