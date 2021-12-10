@@ -2,10 +2,10 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {useToggle} from '../provider/context';
 import {Menu, Transition} from '@headlessui/react'
 import classNames from "classnames";
-import {MenuIcon, UserCircleIcon} from "@heroicons/react/solid";
+import {MenuIcon} from "@heroicons/react/solid";
 import {useAuth} from "../../useAuth";
 import {useHistory} from "react-router-dom";
-import {getFirestore} from "firebase/firestore/lite";
+import DefaultAvatar from "../../components/DefaultAvatar";
 
 export default function TopNavigation() {
     const {toggle} = useToggle();
@@ -68,7 +68,7 @@ export default function TopNavigation() {
                                 {/*<span className="sr-only">Open user menu</span>*/}
                                 {avatarImageUrl ?
                                     <>
-                                        {avatarLoading && <UserCircleIcon className="text-gray-700 h-12 w-12"/>}
+                                        {avatarLoading && <DefaultAvatar/>}
                                             <img
                                                 src={avatarImageUrl}
                                                 onLoad={() => setAvatarLoading(false)}
@@ -78,7 +78,7 @@ export default function TopNavigation() {
                                             </>
 
                                     :
-                                    <UserCircleIcon className="text-gray-700 h-12 w-12"/>
+                                    <DefaultAvatar/>
 
                                 }
 

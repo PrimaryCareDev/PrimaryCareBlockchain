@@ -1,16 +1,17 @@
 import React, {useRef, useState} from 'react';
 import {FormProvider, useForm} from "react-hook-form"
-import {getDownloadURL, getStorage, ref, uploadBytes, uploadString} from "firebase/storage";
+import {getDownloadURL, getStorage, ref, uploadBytes, uploadString, } from "firebase/storage";
 import FileDropzone from "../components/FileDropzone";
 import {useAuth} from "../useAuth";
 import classnames from 'classnames';
-import {doc, getFirestore, updateDoc} from "firebase/firestore/lite";
+import {doc, getFirestore, updateDoc, serverTimestamp} from "firebase/firestore/lite";
 import Button from "../components/Button";
 import SmallLoadingSpinner from "../components/SmallLoadingSpinner";
 import AvatarEditor from "react-avatar-editor";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import {UserCircleIcon, ZoomInIcon, ZoomOutIcon} from "@heroicons/react/solid";
+import {ZoomInIcon, ZoomOutIcon} from "@heroicons/react/solid";
+import DefaultAvatar from "../components/DefaultAvatar";
 
 const DoctorVerificationForm = (props) => {
     const methods = useForm({mode: "onBlur"});
@@ -62,7 +63,8 @@ const DoctorVerificationForm = (props) => {
                 medicalLicenseNumber: data.licenseNumber,
                 idImageUrl: idImageURL,
                 licenseImageUrl: licenseImageURL,
-                avatarImageUrl: avatarImageURL
+                avatarImageUrl: avatarImageURL,
+                submittedVerificationTimestamp: serverTimestamp()
             });
 
             props.onSubmitRegistration()
@@ -112,7 +114,7 @@ const DoctorVerificationForm = (props) => {
                                                     </div>
                                                 </>
                                                 :
-                                                <UserCircleIcon className="w-12 h-12 text-gray-600"/>
+                                                <DefaultAvatar/>
                                             }
                                             <Button className="my-2 justify-self-start"
                                                     onClick={() => avatarImageInput.current.click()}>Browse</Button>

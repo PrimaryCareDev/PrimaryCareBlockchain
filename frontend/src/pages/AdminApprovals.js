@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Table from "../components/Table";
 import TableHeader from "../components/TableHeader";
 import TableCell from "../components/TableCell";
@@ -22,6 +22,7 @@ import LoadingDots from "../components/LoadingDots";
 import Button from "../components/Button";
 import TableNav from "../components/TableNav";
 import {Link, useRouteMatch} from "react-router-dom";
+import DefaultAvatar from "../components/DefaultAvatar";
 
 
 const AdminApprovals = () => {
@@ -39,9 +40,9 @@ const AdminApprovals = () => {
 
     const resultsPerPage = 5
     const doctorsRef = collection(db, "doctors");
-    const firstQuery = query(doctorsRef, where("verified", "==", false), orderBy("email"), limit(resultsPerPage + 1));
-    const nextQuery = query(doctorsRef, where("verified", "==", false), orderBy("email"), limit(resultsPerPage + 1), startAfter(lastDoc));
-    const prevQuery = query(doctorsRef, where("verified", "==", false), orderBy("email"), limitToLast(resultsPerPage + 1), endBefore(firstDoc));
+    const firstQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limit(resultsPerPage + 1));
+    const nextQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limit(resultsPerPage + 1), startAfter(lastDoc));
+    const prevQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limitToLast(resultsPerPage + 1), endBefore(firstDoc));
 
     async function firstRequest() {
 
@@ -114,6 +115,8 @@ const AdminApprovals = () => {
                     <Table>
                         <TableHeader>
                             <tr>
+                                <TableCell>Avatar</TableCell>
+                                <TableCell>Full Name</TableCell>
                                 <TableCell>Email</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Action</TableCell>
@@ -123,25 +126,45 @@ const AdminApprovals = () => {
                             {dataTable.map((user, i) => (
                                 <TableRow key={i}>
                                     <TableCell>
+                                        {user.avatarImageUrl ?
+                                            <img src={user.avatarImageUrl} className="rounded-full h-12 w-12"/>
+                                            :
+                                            <DefaultAvatar/>
+                                        }
+                                    </TableCell>
+                                    <TableCell>
+                                        <p className="font-semibold">{user.firstName} {user.lastName}</p>
+                                    </TableCell>
+                                    <TableCell>
                                         <div className="flex items-center text-sm">
                                             {/* <Avatar className="hidden mr-3 md:block" src={user.avatar} alt="User avatar" /> */}
                                             <div>
                                                 <p className="font-semibold">{user.email}</p>
-                                                <p className="text-xs text-gray-600 dark:text-gray-400">{user.job}</p>
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <span className="text-sm">{user.verified.toString()}</span>
+                                        {user.verified ?
+                                            <span
+                                                className="px-3 py-1  text-sm rounded-full text-green-600  bg-green-200">
+                                            Verified
+                                            </span>
+                                            :
+                                            <span
+                                                className="px-3 py-1  text-sm rounded-full text-yellow-600  bg-yellow-200">
+                                            Pending Verification
+                                            </span>
+                                        }
+
                                     </TableCell>
                                     <TableCell>
                                         <Link
                                             to={{
                                                 pathname: `${url}/details`,
-                                                state: { userId: user.id}
+                                                state: {userId: user.id}
                                             }}
                                         >
-                                            <Button> Open </Button>
+                                            <Button> View </Button>
                                         </Link>
                                     </TableCell>
                                 </TableRow>

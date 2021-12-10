@@ -4,8 +4,9 @@ import {doc, getDoc, getFirestore, updateDoc} from "firebase/firestore/lite";
 import LoadingDots from "../components/LoadingDots";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
-import {ArrowCircleLeftIcon, CheckIcon, UserCircleIcon} from "@heroicons/react/solid";
+import {ArrowCircleLeftIcon, CheckIcon} from "@heroicons/react/solid";
 import {Dialog, Transition} from "@headlessui/react";
+import DefaultAvatar from "../components/DefaultAvatar";
 
 const AdminApprovalDetails = () => {
 
@@ -140,7 +141,7 @@ const AdminApprovalDetails = () => {
                                                          onLoad={() => setAvatarImageLoading(false)}
                                                          className="rounded-full" alt="Profile Picture"/>
                                                 </>
-                                                : <UserCircleIcon className="text-gray-700 h-12 w-12"/>
+                                                : <DefaultAvatar/>
                                             }
                                         </dd>
                                     </div>
