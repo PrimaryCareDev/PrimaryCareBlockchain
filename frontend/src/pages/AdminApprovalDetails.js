@@ -2,10 +2,9 @@ import React, {Fragment, useEffect, useState} from 'react'
 import {Link, useHistory, useLocation} from "react-router-dom";
 import {doc, getDoc, getFirestore, updateDoc} from "firebase/firestore/lite";
 import LoadingDots from "../components/LoadingDots";
-import {getDownloadURL, getStorage, ref} from "firebase/storage";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
-import {ArrowCircleLeftIcon, CheckIcon} from "@heroicons/react/solid";
+import {ArrowCircleLeftIcon, CheckIcon, UserCircleIcon} from "@heroicons/react/solid";
 import {Dialog, Transition} from "@headlessui/react";
 
 const AdminApprovalDetails = () => {
@@ -13,6 +12,7 @@ const AdminApprovalDetails = () => {
     const [loading, setLoading] = useState(true)
     const [approvalLoading, setApprovalLoading] = useState(false)
     const [idImageLoading, setIdImageLoading] = useState(true)
+    const [avatarImageLoading, setAvatarImageLoading] = useState(true)
     const [licenseImageLoading, setLicenseImageLoading] = useState(true)
     const [details, setDetails] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -35,7 +35,7 @@ const AdminApprovalDetails = () => {
             setLoading(false)
 
 
-        } catch(e) {
+        } catch (e) {
             console.log("Error getting doctor's document from firestore")
         }
     }
@@ -130,6 +130,20 @@ const AdminApprovalDetails = () => {
                             </div>
                             <div className="border-t border-gray-200">
                                 <dl>
+                                    <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                        <dt className="text-sm font-medium text-gray-500">Profile Picture</dt>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                            {details.avatarImageUrl ?
+                                                <>
+                                                    {avatarImageLoading && <LoadingSpinner/>}
+                                                    <img src={details.avatarImageUrl}
+                                                         onLoad={() => setAvatarImageLoading(false)}
+                                                         className="rounded-full" alt="Profile Picture"/>
+                                                </>
+                                                : <UserCircleIcon className="text-gray-700 h-12 w-12"/>
+                                            }
+                                        </dd>
+                                    </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">First name</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{details.firstName}</dd>
@@ -158,7 +172,7 @@ const AdminApprovalDetails = () => {
                                             {idImageLoading && <LoadingSpinner/>}
                                             <img src={details.idImageUrl}
                                                  onLoad={() => setIdImageLoading(false)}
-                                                 className="max-w-xl" alt="Identification image"/>
+                                                 className="w-full sm:max-w-xl" alt="Identification image"/>
                                         </dd>
                                     </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -167,7 +181,7 @@ const AdminApprovalDetails = () => {
                                             {licenseImageLoading && <LoadingSpinner/>}
                                             <img src={details.licenseImageUrl}
                                                  onLoad={() => setLicenseImageLoading(false)}
-                                                 className="max-w-xl" alt="License image"/>
+                                                 className="w-full sm:max-w-xl" alt="License image"/>
                                         </dd>
                                     </div>
                                 </dl>
