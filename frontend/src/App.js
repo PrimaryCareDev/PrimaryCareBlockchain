@@ -16,6 +16,7 @@ import { AuthProvider, useAuth } from "./useAuth.js";
 import DoctorRegister from './pages/DoctorRegister';
 import DashboardProvider from './dashboard/provider/context'
 import AdminLogin from "./pages/AdminLogin";
+import Patient from "./pages/Patient";
 
 function App() {
 
@@ -45,6 +46,9 @@ function App() {
                         </Route>
                         <Route exact path="/doctorRegister">
                             <DoctorRegister />
+                        </Route>
+                        <Route path="/patient">
+                            <Patient/>
                         </Route>
 
                     </Switch>

@@ -57,7 +57,7 @@ const SidenavItems = ({isValidRole}) => {
                 </ul>
 
 
-                : <> NOTHING</>}
+                : <></>}
         </>
     )
 }

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 
 import DashboardLayout from '../dashboard/layout';
 import DoctorHome from "./DoctorHome";
-import {Route, Switch, useRouteMatch} from "react-router-dom";
+import {Link, Route, Switch, useRouteMatch} from "react-router-dom";
 import DoctorPatientList from "./DoctorPatientList";
 import {useAuth} from "../useAuth";
 import {doc, getDoc, getFirestore} from "firebase/firestore/lite";
@@ -61,7 +61,7 @@ const Doctor = () => {
                     </Route>
                 </Switch>
                 :
-                <>NOT VALID ROLE</>
+                <>Your account does not have Doctor privileges. Are you perhaps trying to login as a <Link to="/patient" className="text-indigo-600">Patient</Link>?</>
             }
 
         </DashboardLayout>

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 
 import DashboardLayout from '../dashboard/layout';
-import {Route, Switch, useRouteMatch} from "react-router-dom";
+import {Link, Route, Switch, useRouteMatch} from "react-router-dom";
 import AdminHome from "./AdminHome";
 import {useAuth} from "../useAuth";
 import {getAuth} from "@firebase/auth";
@@ -71,7 +71,7 @@ const Admin = () => {
                     </Route>
                 </Switch>
                 :
-                <>NOT VALID ROLE</>
+                <>Your account does not have Administrator privileges. Please try to login as a <Link to="/doctor" className="text-indigo-600">Doctor</Link> or <Link to="/patient" className="text-indigo-600">Patient</Link> instead.</>
             }
 
         </DashboardLayout>
