@@ -45,7 +45,7 @@ const Doctor = () => {
     }, []);
 
     return (
-        <DashboardLayout>
+        <DashboardLayout isValidRole={isValidRole}>
             {loading
             ?
             <LoadingDots/>

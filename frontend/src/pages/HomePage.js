@@ -4,6 +4,8 @@ import { Popover, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import '../index.css';
 import { Link } from 'react-router-dom';
+import logo from '../healthlink_logo.svg';
+
 
 const navigation = [
     { name: 'Product', href: '#' },
@@ -34,10 +36,12 @@ const HomePage = () => {
                                     <div className="flex items-center justify-between w-full md:w-auto">
                                         <a href="#">
                                             <span className="sr-only">Workflow</span>
-                                            <img
-                                                className="h-8 w-auto sm:h-10"
-                                                src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                                            />
+                                            {/*<img*/}
+                                            {/*    className="h-8 w-auto sm:h-10"*/}
+                                            {/*    src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"*/}
+                                            {/*/>*/}
+                                            <img src={logo} className="h-8 w-auto sm:h-12 text-indigo-600" alt="logo" />
+
                                         </a>
                                         <div className="-mr-2 flex items-center md:hidden">
                                             <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
@@ -48,11 +52,11 @@ const HomePage = () => {
                                     </div>
                                 </div>
                                 <div className="hidden md:block md:ml-10 md:pr-4 md:space-x-8">
-                                    {navigation.map((item) => (
-                                        <a key={item.name} href={item.href} className="font-medium text-gray-500 hover:text-gray-900">
-                                            {item.name}
-                                        </a>
-                                    ))}
+                                    {/*{navigation.map((item) => (*/}
+                                    {/*    <a key={item.name} href={item.href} className="font-medium text-gray-500 hover:text-gray-900">*/}
+                                    {/*        {item.name}*/}
+                                    {/*    </a>*/}
+                                    {/*))}*/}
                                     <Link to="/admin" className="font-medium text-indigo-600 hover:text-indigo-500">
                                         Admin
                                     </Link>
@@ -76,11 +80,12 @@ const HomePage = () => {
                                 <div className="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
                                     <div className="px-5 pt-4 flex items-center justify-between">
                                         <div>
-                                            <img
-                                                className="h-8 w-auto"
-                                                src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                                                alt=""
-                                            />
+                                            {/*<img*/}
+                                            {/*    className="h-8 w-auto"*/}
+                                            {/*    src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"*/}
+                                            {/*    alt=""*/}
+                                            {/*/>*/}
+                                            <img src={logo} className="h-8 w-auto" alt="logo" />
                                         </div>
                                         <div className="-mr-2">
                                             <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
@@ -115,7 +120,8 @@ const HomePage = () => {
                         <div className="sm:text-center lg:text-left">
                             <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                                 <span className="block xl:inline">Welcome to</span>{' '}
-                                <span className="block text-indigo-600 xl:inline">Healthlink</span>
+                                 <span className="block text-indigo-600 flex items-center"><img src={logo} className="h-8 w-auto sm:h-12 inline mr-1" alt="logo" />HealthLink</span>
+
                             </h1>
                             <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
                                 Login as a Doctor or a Patient below

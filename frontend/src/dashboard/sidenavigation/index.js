@@ -14,7 +14,7 @@ const style = {
   default: `bg-white h-screen overflow-y-auto top-0 lg:relative`,
 };
 
-export default function SideNavigation({ mobilePosition }) {
+export default function SideNavigation({ isValidRole, mobilePosition }) {
   const { open, ref } = useToggle();
   return (
     <aside
@@ -24,7 +24,7 @@ export default function SideNavigation({ mobilePosition }) {
     >
       <div className={style.container}>
         <SidenavHeader />
-        <SidenavItems />
+        <SidenavItems isValidRole={isValidRole} />
       </div>
     </aside>
   );

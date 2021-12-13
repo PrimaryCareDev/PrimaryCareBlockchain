@@ -41,12 +41,18 @@ const Admin = () => {
         if (!userData) {
             getAdminDetails()
         } else {
+            if (userData.role === userType.ADMIN) {
+                setIsValidRole(true)
+            }
+            else {
+                setIsValidRole(false)
+            }
             setLoading(false)
         }
     }, []);
 
     return (
-        <DashboardLayout>
+        <DashboardLayout isValidRole={isValidRole}>
             {loading
             ?
             <LoadingDots/>

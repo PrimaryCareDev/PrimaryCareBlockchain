@@ -12,7 +12,7 @@ const style = {
 };
 
 
-const SidenavItems = () => {
+const SidenavItems = ({isValidRole}) => {
     const [loading, setLoading] = useState(true)
     const [navData, setNavData] = useState(null)
 
@@ -21,7 +21,7 @@ const SidenavItems = () => {
 
     useEffect(() => {
 
-        if (userData) {
+        if (userData && isValidRole) {
             switch (userData.role) {
                 case userType.DOCTOR:
                     setNavData(doctorNav)
@@ -36,7 +36,7 @@ const SidenavItems = () => {
             setNavData(null)
         }
 
-    }, [userData]);
+    }, [isValidRole]);
 
     return (
         <>

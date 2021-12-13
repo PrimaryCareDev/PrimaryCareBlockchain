@@ -12,13 +12,13 @@ const style = {
   main: `h-screen container mx-auto px-2 pb-36 pt-4 md:pb-8 lg:pt-8 lg:px-8`,
 };
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ isValidRole, children }) {
   const { open } = useToggle();
   return (
     <div className={style.container}>
       <div className="flex items-start">
         <Overlay />
-        <SideNavigation mobilePosition="right" />
+        <SideNavigation isValidRole={isValidRole} mobilePosition="left" />
         <div
           className={`${style.mainContainer} 
           ${open ? style.open : style.close}`}
