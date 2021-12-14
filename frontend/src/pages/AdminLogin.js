@@ -1,8 +1,9 @@
 import React, {useRef, useState} from 'react'
 import {LockClosedIcon} from '@heroicons/react/solid'
 import {useAuth} from "../useAuth.js";
-import {useHistory, useLocation} from "react-router-dom"
+import {Link, useHistory, useLocation} from "react-router-dom"
 import {getFirestore} from "firebase/firestore/lite";
+import logo from "../healthlink_logo.svg";
 
 const DoctorLogin = () => {
     const emailRef = useRef()
@@ -42,11 +43,9 @@ const DoctorLogin = () => {
             <div className="max-w-md w-full space-y-8">
 
                 <div>
-                    <img
-                        className="mx-auto h-12 w-auto"
-                        src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                        alt="Workflow"
-                    />
+                    <Link to="/">
+                        <img src={logo} className="mx-auto h-12 w-auto" alt="logo" />
+                    </Link>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Admin Sign In</h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Or{' '}
