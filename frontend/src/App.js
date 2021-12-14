@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import React, { useContext, createContext, useState } from "react";
+import React from "react";
 import './App.css';
 import './index.css';
 import {
@@ -17,6 +17,7 @@ import DoctorRegister from './pages/DoctorRegister';
 import DashboardProvider from './dashboard/provider/context'
 import AdminLogin from "./pages/AdminLogin";
 import Patient from "./pages/Patient";
+import PasswordReset from "./pages/PasswordReset";
 
 function App() {
 
@@ -49,6 +50,9 @@ function App() {
                         </Route>
                         <Route path="/patient">
                             <Patient/>
+                        </Route>
+                        <Route exact path="/passwordReset">
+                            <PasswordReset />
                         </Route>
 
                     </Switch>
