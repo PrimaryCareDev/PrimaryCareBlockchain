@@ -34,7 +34,7 @@ const HomePage = () => {
                             <nav className="relative flex items-center justify-between sm:h-10 lg:justify-start" aria-label="Global">
                                 <div className="flex items-center flex-grow flex-shrink-0 lg:flex-grow-0">
                                     <div className="flex items-center justify-between w-full md:w-auto">
-                                        <a href="#">
+                                        <a href="/">
                                             <span className="sr-only">Workflow</span>
                                             {/*<img*/}
                                             {/*    className="h-8 w-auto sm:h-10"*/}
@@ -130,7 +130,6 @@ const HomePage = () => {
                                 <div className="rounded-md shadow">
                                     <Link to="/doctor">
                                         <button
-                                            href="#"
                                             className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
                                         >
                                             Doctor

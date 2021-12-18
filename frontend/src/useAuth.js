@@ -1,4 +1,3 @@
-// Hook (use-auth.js)
 import React, {useState, useEffect, useContext, createContext} from "react";
 import {initializeApp} from 'firebase/app';
 import {
@@ -8,9 +7,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
-    confirmPasswordReset,
-    setPersistence,
-    browserSessionPersistence
+    confirmPasswordReset
 } from "firebase/auth";
 
 import {getFirestore, doc, setDoc} from "firebase/firestore/lite";
@@ -27,7 +24,7 @@ const firebaseConfig = {
     appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 
 const AuthContext = createContext();
 

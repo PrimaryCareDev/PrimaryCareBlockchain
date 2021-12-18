@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, forwardRef } from 'react'
+import React, { useEffect, useState, forwardRef } from 'react'
 import Button from './Button'
 
 const PrevIcon = function PrevIcon(props) {

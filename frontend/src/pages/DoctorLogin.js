@@ -38,11 +38,6 @@ const DoctorLogin = () => {
 
     }
 
-    async function sendPasswordReset() {
-        await sendPasswordResetEmail(auth, emailRef.current.value)
-        console.log("SENT!")
-    }
-
     function onAlertCloseClick() {
         setError("")
     }
@@ -98,8 +93,6 @@ const DoctorLogin = () => {
                     </div>
 
                     <div className="flex items-center justify-end">
-
-
                         <div className="text-sm">
                             <Link to="/passwordReset" className="font-medium text-indigo-600 hover:text-indigo-500">
                                 Forgot your password?

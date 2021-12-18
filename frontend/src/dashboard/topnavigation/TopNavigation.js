@@ -73,7 +73,7 @@ export default function TopNavigation() {
                                                 src={avatarImageUrl}
                                                 onLoad={() => setAvatarLoading(false)}
                                                 className={classNames(avatarLoading && "hidden", "h-12 w-12 rounded-full")}
-                                                alt="Avatar Image"
+                                                alt="Avatar"
                                             />
                                             </>
 

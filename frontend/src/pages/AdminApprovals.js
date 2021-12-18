@@ -28,7 +28,6 @@ import DefaultAvatar from "../components/DefaultAvatar";
 const AdminApprovals = () => {
 
     const [loading, setLoading] = useState(true)
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [dataTable, setDataTable] = useState(true)
     const db = getFirestore()
     const [isFirstPage, setIsFirstPage] = useState(true)
@@ -38,7 +37,7 @@ const AdminApprovals = () => {
     let {url} = useRouteMatch();
 
 
-    const resultsPerPage = 5
+    const resultsPerPage = 10
     const doctorsRef = collection(db, "doctors");
     const firstQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limit(resultsPerPage + 1));
     const nextQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limit(resultsPerPage + 1), startAfter(lastDoc));
@@ -127,7 +126,7 @@ const AdminApprovals = () => {
                                 <TableRow key={i}>
                                     <TableCell>
                                         {user.avatarImageUrl ?
-                                            <img src={user.avatarImageUrl} className="rounded-full h-12 w-12"/>
+                                            <img src={user.avatarImageUrl} className="rounded-full h-12 w-12" alt="Avatar" />
                                             :
                                             <DefaultAvatar/>
                                         }

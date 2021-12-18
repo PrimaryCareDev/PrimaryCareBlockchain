@@ -36,10 +36,6 @@ const FileDropzone = (props) => {
             }
         })
 
-        function clearPreview() {
-            console.log("CLEARING PREVIEW")
-        }
-
         return (
 
             <>
@@ -79,7 +75,7 @@ const FileDropzone = (props) => {
                     </div>
                     :
                     <div {...getRootProps({className: "inline-block"})} >
-                        <img src={filePreview} alt="id image preview" className="hover:cursor-pointer hover:opacity-50"/>
+                        <img src={filePreview} alt="identification submission preview" className="hover:cursor-pointer hover:opacity-50"/>
                         <input id={name} name={name}
                                type="file" className="sr-only" {...getInputProps()}/>
                     </div>

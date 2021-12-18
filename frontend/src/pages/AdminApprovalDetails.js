@@ -139,7 +139,7 @@ const AdminApprovalDetails = () => {
                                                     {avatarImageLoading && <LoadingSpinner/>}
                                                     <img src={details.avatarImageUrl}
                                                          onLoad={() => setAvatarImageLoading(false)}
-                                                         className="rounded-full" alt="Profile Picture"/>
+                                                         className="rounded-full" alt="Avatar"/>
                                                 </>
                                                 : <DefaultAvatar/>
                                             }
@@ -173,7 +173,7 @@ const AdminApprovalDetails = () => {
                                             {idImageLoading && <LoadingSpinner/>}
                                             <img src={details.idImageUrl}
                                                  onLoad={() => setIdImageLoading(false)}
-                                                 className="w-full sm:max-w-xl" alt="Identification image"/>
+                                                 className="w-full sm:max-w-xl" alt="Identification"/>
                                         </dd>
                                     </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -182,7 +182,7 @@ const AdminApprovalDetails = () => {
                                             {licenseImageLoading && <LoadingSpinner/>}
                                             <img src={details.licenseImageUrl}
                                                  onLoad={() => setLicenseImageLoading(false)}
-                                                 className="w-full sm:max-w-xl" alt="License image"/>
+                                                 className="w-full sm:max-w-xl" alt="License"/>
                                         </dd>
                                     </div>
                                 </dl>

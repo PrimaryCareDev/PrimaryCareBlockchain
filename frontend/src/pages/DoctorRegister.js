@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useAuth } from "../useAuth.js";
-import { Link, useHistory, useLocation } from "react-router-dom"
+import { Link, useHistory } from "react-router-dom"
 import logo from "../healthlink_logo.svg";
 
 const DoctorRegister = () => {

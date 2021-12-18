@@ -29,6 +29,9 @@ const SidenavItems = ({isValidRole}) => {
                 case userType.ADMIN:
                     setNavData(adminNav)
                     break
+                default:
+                    setNavData(null)
+                    break
             }
             setLoading(false)
         } else {
