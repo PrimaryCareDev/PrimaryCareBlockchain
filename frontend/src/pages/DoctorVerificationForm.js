@@ -26,7 +26,6 @@ const DoctorVerificationForm = (props) => {
     const avatarImageEditor = useRef(null)
 
     async function onSubmit(data) {
-        // console.log(data);
         try {
 
             setSubmitting(true)
@@ -40,7 +39,7 @@ const DoctorVerificationForm = (props) => {
 
             let avatarImageURL = "";
             let avatarDataUrl;
-            if (avatarImageEditor) {
+            if (avatarImageEditor.current) {
                 avatarDataUrl = avatarImageEditor.current.getImageScaledToCanvas().toDataURL()
             }
 
