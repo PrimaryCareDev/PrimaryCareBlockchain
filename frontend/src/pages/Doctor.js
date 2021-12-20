@@ -40,6 +40,7 @@ const Doctor = () => {
         if (!userData) {
             getDoctorDetails()
         } else {
+            setIsValidRole(userData.role === userType.DOCTOR)
             setLoading(false)
         }
     }, []);
