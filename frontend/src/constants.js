@@ -1,5 +1,5 @@
 export const userType = {
-    DOCTOR: "doctor",
-    PATIENT: "patient",
-    ADMIN: "admin"
+    DOCTOR: "DOCTOR",
+    PATIENT: "PATIENT",
+    ADMIN: "ADMIN"
 }

@@ -41,12 +41,7 @@ const Admin = () => {
         if (!userData) {
             getAdminDetails()
         } else {
-            if (userData.role === userType.ADMIN) {
-                setIsValidRole(true)
-            }
-            else {
-                setIsValidRole(false)
-            }
+            setIsValidRole(userData.role === userType.ADMIN)
             setLoading(false)
         }
     }, []);
