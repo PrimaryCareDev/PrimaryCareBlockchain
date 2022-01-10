@@ -1,0 +1,15 @@
+create table doctor
+(
+    uid                        varchar(255) not null
+        primary key,
+    "firstName"                varchar(255),
+    "lastName"                 varchar(255),
+    email                      varchar(255),
+    verified                   boolean default false,
+    "submittedForVerification" boolean default false,
+    "idImageUrl"               varchar(512),
+    "medicalPractice"          varchar(255),
+    "medicalLicenseNumber"     varchar(255),
+    "licenseImageUrl"          varchar(512),
+    "avatarImageUrl"           varchar(512)
+);

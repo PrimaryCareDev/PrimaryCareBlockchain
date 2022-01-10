@@ -32,6 +32,16 @@ const button = {
       active: 'hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
       disabled: 'opacity-50 cursor-not-allowed',
     },
+    submit: {
+      base: 'text-white bg-green-600 border border-transparent',
+      active: 'hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500',
+      disabled: 'opacity-50 cursor-not-allowed',
+    },
+    neutral: {
+      base: 'text-white bg-gray-600 border border-transparent',
+      active: 'hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500',
+      disabled: 'opacity-50 cursor-not-allowed',
+    },
     outline: {
       base: 'text-gray-600 border-gray-300 border dark:text-gray-400 focus:outline-none',
       active:
@@ -100,16 +110,22 @@ const Button = forwardRef((props, ref) => {
   const iconStyle = button.icon[size]
   const layoutStyles = {
     primary: button.primary.base,
+    submit: button.submit.base,
+    neutral: button.neutral.base,
     outline: button.outline.base,
     link: button.link.base,
   }
   const activeStyles = {
     primary: button.primary.active,
+    submit: button.submit.active,
+    neutral: button.neutral.active,
     outline: button.outline.active,
     link: button.link.active,
   }
   const disabledStyles = {
     primary: button.primary.disabled,
+    submit: button.submit.disabled,
+    neutral: button.neutral.disabled,
     outline: button.outline.disabled,
     link: button.link.disabled,
   }

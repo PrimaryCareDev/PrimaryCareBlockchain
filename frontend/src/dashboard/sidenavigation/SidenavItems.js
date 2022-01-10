@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Link, useLocation} from 'react-router-dom';
 import {useAuth} from "../../useAuth";
-import {doctorNav} from "./navData";
-import {adminNav} from "./navData";
+import {doctorNav, adminNav, patientNav} from "./navData";
 import {userType} from "../../constants";
 
 const style = {
@@ -29,6 +28,9 @@ const SidenavItems = ({isValidRole}) => {
                 case userType.ADMIN:
                     setNavData(adminNav)
                     break
+                case userType.PATIENT:
+                    setNavData(patientNav)
+                    break
                 default:
                     setNavData(null)
                     break
@@ -45,7 +47,6 @@ const SidenavItems = ({isValidRole}) => {
         <>
             {!loading ?
                 <ul>
-
                     {navData.map((item) => (
                         <li key={item.link}>
                             <Link to={item.link} key={item.title}>

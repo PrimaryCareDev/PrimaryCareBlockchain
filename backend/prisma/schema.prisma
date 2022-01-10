@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Doctor {
+  uid                      String   @id(map: "Doctor_pkey") @db.VarChar(255)
+  verified                 Boolean? @default(false)
+  submittedForVerification Boolean? @default(false)
+  idImageUrl               String?  @db.VarChar(512)
+  medicalPractice          String?  @db.VarChar(255)
+  medicalLicenseNumber     String?  @db.VarChar(255)
+  licenseImageUrl          String?  @db.VarChar(512)
+  submissionTimestamp      DateTime?
+  user                     User     @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "doctor_user_uid_fk")
+  patients                 DoctorOnPatient[]
+  @@map("doctor")
+}
+
+model Patient {
+  uid                      String   @id(map: "Patient_pkey") @db.VarChar(255)
+  doctors                  DoctorOnPatient[]
+  user                     User     @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "patient_user_uid_fk")
+  @@map("patient")
+}
+
+model User {
+  uid            String       @id(map: "user_pk") @db.VarChar(50)
+  email          String       @db.VarChar(255) @unique
+  firstName      String?      @db.VarChar(255)
+  lastName       String?      @db.VarChar(255)
+  avatarImageUrl String?      @db.VarChar(255)
+  doctor         Doctor?
+  patient        Patient?
+  userRoles      UserRoles[]
+
+  @@map("user")
+}
+
+model DoctorOnPatient {
+  doctor                    Doctor       @relation(fields: [doctorUid], references: [uid], onDelete: Cascade)
+  doctorUid                 String       @db.VarChar(50)
+  patient                   Patient      @relation(fields: [patientUid], references: [uid], onDelete: Cascade)
+  patientUid                String       @db.VarChar(50)
+  requester                 Role
+  requestedTimestamp        DateTime     @default(now())
+  acceptedTimestamp         DateTime?
+  deleter                   Role?
+  deleteTimestamp           DateTime?
+  rejectedTimestamp         DateTime?
+  status                    RelationshipStatus @default(REQUESTED)
+
+  @@id([doctorUid, patientUid])
+  @@map("doctor_on_patient")
+}
+
+model UserRoles {
+  uid  String @db.VarChar(50)
+  role Role
+  user User   @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "UserRoles_uid_fkey")
+
+  @@id([uid, role], map: "UserRoles_pkey")
+  @@map("user_roles")
+}
+
+enum Role {
+  DOCTOR
+  PATIENT
+  ADMIN
+}
+
+enum RelationshipStatus {
+  REQUESTED
+  ACCEPTED
+  REJECTED
+  BLOCKED
+  DELETED
+}

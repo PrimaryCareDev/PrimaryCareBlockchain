@@ -1,10 +1,9 @@
 import React, {useRef, useState} from 'react';
 import {FormProvider, useForm} from "react-hook-form"
-import {getDownloadURL, getStorage, ref, uploadBytes, uploadString, } from "firebase/storage";
+import {getDownloadURL, getStorage, ref, uploadBytes, uploadString,} from "firebase/storage";
 import FileDropzone from "../components/FileDropzone";
 import {useAuth} from "../useAuth";
 import classnames from 'classnames';
-import {doc, getFirestore, updateDoc, serverTimestamp} from "firebase/firestore/lite";
 import Button from "../components/Button";
 import SmallLoadingSpinner from "../components/SmallLoadingSpinner";
 import AvatarEditor from "react-avatar-editor";
@@ -12,6 +11,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import {ZoomInIcon, ZoomOutIcon} from "@heroicons/react/solid";
 import DefaultAvatar from "../components/DefaultAvatar";
+import {axiosInstance} from "../constants";
 
 const DoctorVerificationForm = (props) => {
     const methods = useForm({mode: "onBlur"});
@@ -20,7 +20,6 @@ const DoctorVerificationForm = (props) => {
     const [avatarImage, setAvatarImage] = useState()
     const [avatarImageScale, setAvatarImageScale] = useState(1.2)
     const {user} = useAuth()
-    const db = getFirestore();
     const storage = getStorage();
     const avatarImageInput = useRef(null)
     const avatarImageEditor = useRef(null)
@@ -52,10 +51,8 @@ const DoctorVerificationForm = (props) => {
 
             const licenseImageUpload = await uploadBytes(licenseStorageRef, data.licenseImage)
             const licenseImageURL = await getDownloadURL(licenseImageUpload.ref)
-            const docRef = doc(db, "doctors", user.uid)
 
-            await updateDoc(docRef, {
-                submittedForVerification: true,
+            await axiosInstance.post("/doctorVerificationSubmission", {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 medicalPractice: data.medicalPractice,
@@ -63,8 +60,7 @@ const DoctorVerificationForm = (props) => {
                 idImageUrl: idImageURL,
                 licenseImageUrl: licenseImageURL,
                 avatarImageUrl: avatarImageURL,
-                submittedVerificationTimestamp: serverTimestamp()
-            });
+            })
 
             props.onSubmitRegistration()
             setSubmitting(false)
@@ -75,6 +71,7 @@ const DoctorVerificationForm = (props) => {
         }
 
     }
+
     function onScaleChange(value) {
         setAvatarImageScale(value)
     }
@@ -89,7 +86,7 @@ const DoctorVerificationForm = (props) => {
 
                                 <div className="col-span-6 grid grid-cols-4">
                                     <div className="col-span-4 sm:col-span-1 grid">
-                                        <label htmlFor="first-name" className="block text-md font-medium text-gray-700">
+                                        <label className="block text-md font-medium text-gray-700">
                                             Profile Picture
                                         </label>
                                         <div>
@@ -142,8 +139,8 @@ const DoctorVerificationForm = (props) => {
                                         {...register("firstName", {required: true})}
                                     />
                                     {errors.firstName &&
-                                    <p className="block text-sm font-medium text-red-700 mt-2">First name is
-                                        required</p>}
+                                        <p className="block text-sm font-medium text-red-700 mt-2">First name is
+                                            required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -163,8 +160,8 @@ const DoctorVerificationForm = (props) => {
                                         {...register("lastName", {required: true})}
                                     />
                                     {errors.lastName &&
-                                    <p className="block text-sm font-medium text-red-700 mt-2">Last name is
-                                        required</p>}
+                                        <p className="block text-sm font-medium text-red-700 mt-2">Last name is
+                                            required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -184,8 +181,8 @@ const DoctorVerificationForm = (props) => {
                                         {...register("medicalPractice", {required: true})}
                                     />
                                     {errors.medicalPractice &&
-                                    <p className="block text-sm font-medium text-red-700 mt-2">Medical practice is
-                                        required</p>}
+                                        <p className="block text-sm font-medium text-red-700 mt-2">Medical practice is
+                                            required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -205,8 +202,8 @@ const DoctorVerificationForm = (props) => {
                                         {...register("licenseNumber", {required: true})}
                                     />
                                     {errors.licenseNumber &&
-                                    <p className="block text-sm font-medium text-red-700 mt-2">License number is
-                                        required</p>}
+                                        <p className="block text-sm font-medium text-red-700 mt-2">License number is
+                                            required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -214,8 +211,9 @@ const DoctorVerificationForm = (props) => {
                                         Image</label>
                                     <FileDropzone accept="image/*" name="idImage"/>
                                     {errors.idImage &&
-                                    <p className="block text-sm font-medium text-red-700 mt-3">Identification image is
-                                        required</p>}
+                                        <p className="block text-sm font-medium text-red-700 mt-3">Identification image
+                                            is
+                                            required</p>}
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
@@ -223,15 +221,16 @@ const DoctorVerificationForm = (props) => {
                                         Image</label>
                                     <FileDropzone accept="image/*" name="licenseImage"/>
                                     {errors.licenseImage &&
-                                    <p className="block text-sm font-medium text-red-700 mt-3">Medical license image is
-                                        required</p>}
+                                        <p className="block text-sm font-medium text-red-700 mt-3">Medical license image
+                                            is
+                                            required</p>}
                                 </div>
                             </div>
                         </div>
                         <div className="px-4 py-3 bg-gray-50 text-right flex justify-end items-center gap-3 sm:px-6">
 
                             <Button type="submit" disabled={submitting}>{submitting &&
-                            <SmallLoadingSpinner className="h-5 w-5 mr-2 -ml-1"/>}Save</Button>
+                                <SmallLoadingSpinner className="h-5 w-5 mr-2 -ml-1"/>}Save</Button>
 
                         </div>
                     </div>
