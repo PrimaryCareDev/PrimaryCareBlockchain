@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react'
-import { LockClosedIcon } from '@heroicons/react/solid'
-import { useAuth } from "../useAuth.js";
-import { Link, useHistory } from "react-router-dom"
+import React, {useRef, useState} from 'react'
+import {LockClosedIcon} from '@heroicons/react/solid'
+import {useAuth} from "../useAuth.js";
+import {Link, useHistory} from "react-router-dom"
 import logo from "../healthlink_logo.svg";
+import {userType} from "../constants";
 
 const DoctorRegister = () => {
 
@@ -10,7 +11,7 @@ const DoctorRegister = () => {
     const passwordRef = useRef()
     const passwordConfirmRef = useRef()
 
-    const { doctorSignUp } = useAuth()
+    const {registerAccount} = useAuth()
     const history = useHistory()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
@@ -25,10 +26,10 @@ const DoctorRegister = () => {
         try {
             setError("")
             setLoading(true)
-            await doctorSignUp(emailRef.current.value, passwordRef.current.value)
+            await registerAccount(emailRef.current.value, passwordRef.current.value, userType.DOCTOR)
             history.replace("/")
             history.push("/doctor")
-        } catch (e){
+        } catch (e) {
             setError(e.message)
         }
 
@@ -45,7 +46,7 @@ const DoctorRegister = () => {
 
                 <div>
                     <Link to="/">
-                        <img src={logo} className="mx-auto h-12 w-auto" alt="logo" />
+                        <img src={logo} className="mx-auto h-12 w-auto" alt="logo"/>
                     </Link>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign Up as a Doctor</h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
@@ -56,7 +57,7 @@ const DoctorRegister = () => {
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="mt-8 space-y-6" action="#" method="POST">
-                    <input type="hidden" name="remember" defaultValue="true" />
+                    <input type="hidden" name="remember" defaultValue="true"/>
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label htmlFor="email-address" className="sr-only">
@@ -104,11 +105,12 @@ const DoctorRegister = () => {
 
                     <div>
                         <button disabled={loading}
-                            type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                                type="submit"
+                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                         >
                             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                                <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
+                                <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+                                                aria-hidden="true"/>
                             </span>
                             Sign Up
                         </button>
@@ -116,14 +118,15 @@ const DoctorRegister = () => {
                 </form>
 
                 {error &&
-                    <div className ="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
+                    <div className="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
                         <span className="text-xl inline-block mr-5 align-middle">
-                            <i className="fas fa-bell" />
+                            <i className="fas fa-bell"/>
                         </span>
                         <span className="inline-block align-middle mr-8">
                             <b className="capitalize">Error</b> {error}
                         </span>
-                        <button onClick={onAlertCloseClick} className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
+                        <button onClick={onAlertCloseClick}
+                                className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
                             <span>×</span>
                         </button>
                     </div>

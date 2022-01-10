@@ -4,9 +4,7 @@ import DashboardLayout from '../dashboard/layout';
 import {Link, Route, Switch, useRouteMatch} from "react-router-dom";
 import AdminHome from "./AdminHome";
 import {useAuth} from "../useAuth";
-import {getAuth} from "@firebase/auth";
-import {doc, getDoc, getFirestore} from "firebase/firestore/lite";
-import {userType} from "../constants";
+import {axiosInstance, userType} from "../constants";
 import LoadingDots from "../components/LoadingDots";
 import AdminApprovals from "./AdminApprovals";
 import AdminApprovalDetails from "./AdminApprovalDetails";
@@ -16,24 +14,35 @@ const Admin = () => {
     const {userData, setUserData} = useAuth()
     const [loading, setLoading] = useState(true)
     const [isValidRole, setIsValidRole] = useState(false)
-    const auth = getAuth()
-    const db = getFirestore()
 
     async function getAdminDetails() {
         try {
-            const docRef = doc(db, "admins", auth.currentUser.uid)
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                setUserData({role: userType.ADMIN, ...docSnap.data()})
+            const res = await axiosInstance.get("/getUserDetails")
+
+            const validRole = res.data.userRoles.filter(function (item) {
+                return item.role === userType.ADMIN
+            })
+
+            if (validRole.length > 0) {
+                setUserData({
+                    role: userType.ADMIN,
+                    email: res.data.email,
+                    firstName: res.data.firstName,
+                    lastName: res.data.lastName,
+                    avatarImageUrl: res.data.avatarImageUrl
+                })
                 setIsValidRole(true)
-                setLoading(false)
             } else {
                 setUserData(null)
                 setIsValidRole(false)
-                setLoading(false)
             }
-        } catch {
-            console.log("Error getting admin's document from firestore")
+            setLoading(false)
+
+        } catch (e) {
+            console.log(e.message)
+            setUserData(null)
+            setIsValidRole(false)
+            setLoading(false)
         }
     }
 
@@ -49,24 +58,26 @@ const Admin = () => {
     return (
         <DashboardLayout isValidRole={isValidRole}>
             {loading
-            ?
-            <LoadingDots/>
-            :
-            isValidRole
                 ?
-                <Switch>
-                    <Route path={`${path}`} exact={true}>
-                        <AdminHome/>
-                    </Route>
-                    <Route exact path={`${path}/pending`}>
-                        <AdminApprovals/>
-                    </Route>
-                    <Route exact path={`${path}/pending/details`}>
-                        <AdminApprovalDetails/>
-                    </Route>
-                </Switch>
+                <LoadingDots/>
                 :
-                <>Your account does not have Administrator privileges. Please try to login as a <Link to="/doctor" className="text-indigo-600">Doctor</Link> or <Link to="/patient" className="text-indigo-600">Patient</Link> instead.</>
+                isValidRole
+                    ?
+                    <Switch>
+                        <Route path={`${path}`} exact={true}>
+                            <AdminHome/>
+                        </Route>
+                        <Route exact path={`${path}/pending`}>
+                            <AdminApprovals/>
+                        </Route>
+                        <Route exact path={`${path}/pending/details`}>
+                            <AdminApprovalDetails/>
+                        </Route>
+                    </Switch>
+                    :
+                    <>Your account does not have Administrator privileges. Please try to login as a <Link to="/doctor"
+                                                                                                          className="text-indigo-600">Doctor</Link> or <Link
+                        to="/patient" className="text-indigo-600">Patient</Link> instead.</>
             }
 
         </DashboardLayout>

@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react'
 import {Link} from "react-router-dom"
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import {getAuth, sendPasswordResetEmail} from "firebase/auth";
 
 const PasswordReset = () => {
     const emailRef = useRef()
@@ -78,26 +78,28 @@ const PasswordReset = () => {
                 </form>
 
                 {emailSent &&
-                <div className="bg-green-200 border-green-600 text-green-600 border-l-4 p-4" role="alert">
-                    <p className="font-bold mb-2">
-                        Password reset email sent
-                    </p>
-                    <p>
-                        If a matching account was found, an email was sent to <b>{emailAddress}</b> to allow you to reset your
-                        password.
-                    </p>
-                </div>
+                    <div className="bg-green-200 border-green-600 text-green-600 border-l-4 p-4" role="alert">
+                        <p className="font-bold mb-2">
+                            Password reset email sent
+                        </p>
+                        <p>
+                            If a matching account was found, an email was sent to <b>{emailAddress}</b> to allow you to
+                            reset your
+                            password.
+                        </p>
+                    </div>
                 }
 
             </div>
 
-                <div
-                    className="max-w-md w-full block text-sm text-gray-600 flex items-center justify-center mt-10">
-                    <p><Link to="/" className="font-medium text-indigo-600 hover:text-indigo-500">Back to homepage</Link></p>
-
-                </div>
+            <div
+                className="max-w-md w-full block text-sm text-gray-600 flex items-center justify-center mt-10">
+                <p><Link to="/" className="font-medium text-indigo-600 hover:text-indigo-500">Back to homepage</Link>
+                </p>
 
             </div>
+
+        </div>
     )
 
 
