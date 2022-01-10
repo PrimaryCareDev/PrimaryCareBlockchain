@@ -8,9 +8,13 @@ const DoctorHome = (props) => {
 
     return (
         <>
-            <SectionTitle>Welcome to Healthlink</SectionTitle>
+            {userData.firstName && userData.lastName ?
+                <SectionTitle>Welcome to Healthlink Dr. {`${userData.firstName} ${userData.lastName}`}</SectionTitle>
+                :
+                <SectionTitle>Welcome to Healthlink</SectionTitle>
+            }
             {userData.verified ?
-                <>VERIFIED</>
+                <p> Your account has been fully verified. Please navigate using the links in the sidebar.</p>
                 :
                 (
                     userData.submittedForVerification ?
