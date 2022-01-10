@@ -2,7 +2,7 @@ import React, {useRef, useState} from 'react'
 import {LockClosedIcon} from '@heroicons/react/solid'
 import {useAuth} from "../useAuth.js";
 import {Link, useHistory, useLocation} from "react-router-dom"
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import {getAuth} from "firebase/auth";
 import logo from "../healthlink_logo.svg";
 
 const DoctorLogin = () => {
@@ -48,8 +48,9 @@ const DoctorLogin = () => {
 
                 <div>
                     <Link to="/">
-                        <img src={logo} className="mx-auto h-12 w-auto" alt="logo" />
-                    </Link>                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in as Doctor</h2>
+                        <img src={logo} className="mx-auto h-12 w-auto" alt="logo"/>
+                    </Link>                    <h2
+                    className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in as Doctor</h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Or{' '}
                         <Link to="/doctorRegister" className="font-medium text-indigo-600 hover:text-indigo-500">
@@ -115,33 +116,32 @@ const DoctorLogin = () => {
                 </form>
 
                 {error &&
-                <div className="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
+                    <div className="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
                         <span className="text-xl inline-block mr-5 align-middle">
                             <i className="fas fa-bell"/>
                         </span>
-                    <span className="inline-block align-middle mr-8">
+                        <span className="inline-block align-middle mr-8">
                             <b className="capitalize">Error</b> {error}
                         </span>
-                    <button onClick={onAlertCloseClick}
-                            className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
-                        <span>×</span>
-                    </button>
-                </div>
+                        <button onClick={onAlertCloseClick}
+                                className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
+                            <span>×</span>
+                        </button>
+                    </div>
                 }
 
 
-
-
             </div>
 
-                <div
-                    className="max-w-md w-full block text-sm  text-gray-600 bg-gray-500 bg-opacity-10 h-12 flex items-center justify-center p-4 rounded-md mt-10">
-                    <p>Are you a patient? {' '} <Link to="/patient" className="font-medium text-indigo-600 hover:text-indigo-500">Sign in here instead.</Link></p>
-                </div>
-
-
-
+            <div
+                className="max-w-md w-full block text-sm  text-gray-600 bg-gray-500 bg-opacity-10 h-12 flex items-center justify-center p-4 rounded-md mt-10">
+                <p>Are you a patient? {' '} <Link to="/patient"
+                                                  className="font-medium text-indigo-600 hover:text-indigo-500">Sign in
+                    here instead.</Link></p>
             </div>
+
+
+        </div>
     )
 
 

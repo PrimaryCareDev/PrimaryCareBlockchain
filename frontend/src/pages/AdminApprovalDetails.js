@@ -1,12 +1,13 @@
 import React, {Fragment, useEffect, useState} from 'react'
 import {Link, useHistory, useLocation} from "react-router-dom";
-import {doc, getDoc, getFirestore, updateDoc} from "firebase/firestore/lite";
 import LoadingDots from "../components/LoadingDots";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
 import {ArrowCircleLeftIcon, CheckIcon} from "@heroicons/react/solid";
 import {Dialog, Transition} from "@headlessui/react";
 import DefaultAvatar from "../components/DefaultAvatar";
+import {axiosInstance} from "../constants";
+import {getAuth} from "firebase/auth";
 
 const AdminApprovalDetails = () => {
 
@@ -15,46 +16,43 @@ const AdminApprovalDetails = () => {
     const [idImageLoading, setIdImageLoading] = useState(true)
     const [avatarImageLoading, setAvatarImageLoading] = useState(true)
     const [licenseImageLoading, setLicenseImageLoading] = useState(true)
-    const [details, setDetails] = useState(null)
+    const [doctorDetails, setDoctorDetails] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const db = getFirestore()
     const data = useLocation()
     const history = useHistory();
+    const auth = getAuth()
 
-    async function getDoctorDetails() {
+    async function refreshDoctorDetails() {
         try {
             setLoading(true)
             const doctorId = data.state.userId
-            const docRef = doc(db, "doctors", doctorId)
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                setDetails(docSnap.data())
-            } else {
-                console.log("doctor id not found")
-                //TODO: doctor id not found in DB
-            }
-            setLoading(false)
+
+            const res = await axiosInstance.get(`/admin/getDoctorDetails?doctorUid=${doctorId}`)
+            setDoctorDetails(res.data)
 
 
         } catch (e) {
-            console.log("Error getting doctor's document from firestore")
+            console.log(e.message)
         }
     }
 
     async function approveApplication() {
         try {
             setApprovalLoading(true)
-            const doctorId = data.state.userId
-            const docRef = doc(db, "doctors", doctorId)
-            await updateDoc(docRef, {
-                verified: true,
-            });
+            const doctorId = doctorDetails.uid
+            // const docRef = doc(db, "doctors", doctorId)
+            // await updateDoc(docRef, {
+            //     verified: true,
+            // });
+
+            await axiosInstance.post("/admin/approveDoctor", {
+                doctorUid: doctorId
+            })
             setApprovalLoading(false)
             closeModal()
-            await getDoctorDetails()
+            await refreshDoctorDetails()
         } catch (e) {
             console.log(e.message)
-
         }
     }
 
@@ -66,9 +64,11 @@ const AdminApprovalDetails = () => {
         setIsModalOpen(true)
     }
 
-    useEffect(() => {
+    useEffect(async () => {
         if (data.state) {
-            getDoctorDetails()
+            await refreshDoctorDetails()
+            setLoading(false)
+
         } else {
             history.push("/admin/pending")
         }
@@ -84,7 +84,7 @@ const AdminApprovalDetails = () => {
                     :
                     <>
 
-                        {details.verified ?
+                        {doctorDetails.verified ?
                             <div
                                 className="shadow rounded-xl p-5 bg-green-600 my-5 lg:flex lg:items-center lg:justify-between">
                                 <div className="flex-1 min-w-0">
@@ -134,10 +134,10 @@ const AdminApprovalDetails = () => {
                                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Profile Picture</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                            {details.avatarImageUrl ?
+                                            {doctorDetails.avatarImageUrl ?
                                                 <>
                                                     {avatarImageLoading && <LoadingSpinner/>}
-                                                    <img src={details.avatarImageUrl}
+                                                    <img src={doctorDetails.avatarImageUrl}
                                                          onLoad={() => setAvatarImageLoading(false)}
                                                          className="rounded-full" alt="Avatar"/>
                                                 </>
@@ -147,31 +147,31 @@ const AdminApprovalDetails = () => {
                                     </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">First name</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{details.firstName}</dd>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{doctorDetails.user.firstName}</dd>
                                     </div>
                                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Last name</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{details.lastName}
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{doctorDetails.user.lastName}
                                         </dd>
                                     </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Email address</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{details.email}</dd>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{doctorDetails.user.email}</dd>
                                     </div>
                                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Practice/clinic name</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{details.medicalPractice}
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{doctorDetails.medicalPractice}
                                         </dd>
                                     </div>
                                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Medical License Number</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{details.medicalLicenseNumber}</dd>
+                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{doctorDetails.medicalLicenseNumber}</dd>
                                     </div>
                                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Identification Image</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                                             {idImageLoading && <LoadingSpinner/>}
-                                            <img src={details.idImageUrl}
+                                            <img src={doctorDetails.idImageUrl}
                                                  onLoad={() => setIdImageLoading(false)}
                                                  className="w-full sm:max-w-xl" alt="Identification"/>
                                         </dd>
@@ -180,7 +180,7 @@ const AdminApprovalDetails = () => {
                                         <dt className="text-sm font-medium text-gray-500">License Image</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                                             {licenseImageLoading && <LoadingSpinner/>}
-                                            <img src={details.licenseImageUrl}
+                                            <img src={doctorDetails.licenseImageUrl}
                                                  onLoad={() => setLicenseImageLoading(false)}
                                                  className="w-full sm:max-w-xl" alt="License"/>
                                         </dd>
@@ -234,7 +234,9 @@ const AdminApprovalDetails = () => {
                                             </Dialog.Title>
                                             <div className="mt-2">
                                                 <p className="text-sm text-gray-500">
-                                                    Are you sure you want to approve {details.firstName} as Doctor?
+                                                    Are you sure you want to
+                                                    approve {`${doctorDetails.user.firstName} ${doctorDetails.user.lastName}`} as
+                                                    a Doctor?
                                                 </p>
                                             </div>
 

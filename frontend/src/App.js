@@ -17,6 +17,9 @@ import DashboardProvider from './dashboard/provider/context'
 import AdminLogin from "./pages/AdminLogin";
 import Patient from "./pages/Patient";
 import PasswordReset from "./pages/PasswordReset";
+import TestBackend from "./pages/TestBackend";
+import PatientLogin from "./pages/PatientLogin";
+import PatientRegister from "./pages/PatientRegister";
 
 function App() {
 
@@ -47,11 +50,20 @@ function App() {
                         <Route exact path="/doctorRegister">
                             <DoctorRegister />
                         </Route>
-                        <Route path="/patient">
-                            <Patient/>
+                        <PrivateRoute redirectTo="/patientLogin" path="/patient">
+                            <Patient />
+                        </PrivateRoute>
+                        <Route exact path="/patientLogin">
+                            <PatientLogin/>
+                        </Route>
+                        <Route exact path="/patientRegister">
+                            <PatientRegister/>
                         </Route>
                         <Route exact path="/passwordReset">
                             <PasswordReset />
+                        </Route>
+                        <Route exact path="/testBackend">
+                            <TestBackend />
                         </Route>
 
                     </Switch>

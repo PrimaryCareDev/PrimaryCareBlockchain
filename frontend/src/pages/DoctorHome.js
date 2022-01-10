@@ -14,7 +14,7 @@ const DoctorHome = (props) => {
                 :
                 (
                     userData.submittedForVerification ?
-                        <div className="bg-green-200 border-green-600 text-green-600 border-l-4 p-4"
+                        <div className="bg-yellow-200 border-yellow-600 text-yellow-600 border-l-4 p-4"
                              role="alert">
                             <p className="font-bold">
                                 Your application has been received
@@ -34,9 +34,7 @@ const DoctorHome = (props) => {
                                 <p>
                                     You will receive full access to Healthlink after a system administrator approves
                                     your application.
-
                                 </p>
-
                             </div>
                             <DoctorVerificationForm onSubmitRegistration={props.onSubmitRegistration}/>
                         </>

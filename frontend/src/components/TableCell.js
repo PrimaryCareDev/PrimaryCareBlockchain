@@ -2,7 +2,7 @@ import React, {forwardRef} from 'react'
 import classNames from 'classnames'
 
 const style = {
-    base: 'px-4 py-3',
+    base: 'px-3 py-2',
 };
 
 const TableCell = forwardRef((props, ref) => {

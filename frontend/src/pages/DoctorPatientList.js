@@ -1,10 +1,14 @@
 import React from 'react';
-import TablePage from "./TablePage";
+import DoctorMainPatientTable from "../components/DoctorMainPatientTable";
+import SectionTitle from "../components/SectionTitle";
 
 const DoctorPatientList = () => {
     return (
-
-        <TablePage />
+        <>
+            {/*<TablePage />*/}
+            <SectionTitle> Your Patients</SectionTitle>
+            <DoctorMainPatientTable/>
+        </>
 
     );
 };

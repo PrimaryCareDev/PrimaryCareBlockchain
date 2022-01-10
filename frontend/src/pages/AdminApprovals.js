@@ -6,105 +6,38 @@ import TableBody from "../components/TableBody";
 import TableRow from "../components/TableRow";
 import TableFooter from "../components/TableFooter";
 import TableContainer from "../components/TableContainer";
-import {
-    collection,
-    endBefore,
-    getDocs,
-    getFirestore,
-    limit,
-    limitToLast,
-    orderBy,
-    query,
-    startAfter,
-    where
-} from "firebase/firestore/lite";
 import LoadingDots from "../components/LoadingDots";
 import Button from "../components/Button";
-import TableNav from "../components/TableNav";
 import {Link, useRouteMatch} from "react-router-dom";
 import DefaultAvatar from "../components/DefaultAvatar";
-
+import Pagination from "../components/Pagination";
+import {axiosInstance} from "../constants";
 
 const AdminApprovals = () => {
 
     const [loading, setLoading] = useState(true)
     const [dataTable, setDataTable] = useState(true)
-    const db = getFirestore()
-    const [isFirstPage, setIsFirstPage] = useState(true)
-    const [isLastPage, setIsLastPage] = useState(true)
-    const [lastDoc, setLastDoc] = useState(null)
-    const [firstDoc, setFirstDoc] = useState(null)
+    const [pageTable, setPageTable] = useState(1)
+    const [totalResults, setTotalResults] = useState(0)
     let {url} = useRouteMatch();
 
-
     const resultsPerPage = 10
-    const doctorsRef = collection(db, "doctors");
-    const firstQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limit(resultsPerPage + 1));
-    const nextQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limit(resultsPerPage + 1), startAfter(lastDoc));
-    const prevQuery = query(doctorsRef, where("verified", "==", false), where("submittedForVerification", "==", true), orderBy("lastName"), limitToLast(resultsPerPage + 1), endBefore(firstDoc));
 
-    async function firstRequest() {
-
-        const querySnapshot = await getDocs(firstQuery);
-
-        // const resultsTable = querySnapshot.docs.map(doc => {doc.data())
-        const resultsTable = querySnapshot.docs.map(doc => Object.assign({}, {id: doc.id}, doc.data()))
-        if (resultsTable.length > resultsPerPage) {
-            setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 2])
-            resultsTable.pop()
-            setIsLastPage(false)
-        } else {
-            setIsLastPage(true)
-        }
-
-        setFirstDoc(querySnapshot.docs[0])
-        setDataTable(resultsTable)
-        console.log(resultsTable[0])
-
-
+    function onPageChangeTable(p) {
+        setPageTable(p)
     }
 
-    async function handlePreviousClick() {
+    // on page change, load new sliced data
+    // here you would make another server request for new data
+    useEffect(async () => {
 
-        const querySnapshot = await getDocs(prevQuery);
-
-        const resultsTable = querySnapshot.docs.map(doc => Object.assign({}, {id: doc.id}, doc.data()))
-        if (resultsTable.length > resultsPerPage) {
-            setFirstDoc(querySnapshot.docs[1])
-            setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 2])
-            resultsTable.shift()
-            setIsFirstPage(false)
-        } else {
-            setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1])
-            setIsFirstPage(true)
-        }
-
-        setDataTable(resultsTable)
-        setIsLastPage(false)
-    }
-
-    async function handleNextClick() {
+        const res = await axiosInstance.get(`/admin/getApprovalsList?pageNum=${pageTable}&perPage=${resultsPerPage}`)
+        setDataTable(res.data.results)
+        setTotalResults(res.data.totalCount)
+        setLoading(false)
 
 
-        const querySnapshot = await getDocs(nextQuery);
-
-        const resultsTable = querySnapshot.docs.map(doc => Object.assign({}, {id: doc.id}, doc.data()))
-        if (resultsTable.length > resultsPerPage) {
-            setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 2])
-            resultsTable.pop()
-            setIsLastPage(false)
-        } else {
-            setIsLastPage(true)
-        }
-        setFirstDoc(querySnapshot.docs[0])
-        setDataTable(resultsTable)
-        setIsFirstPage(false)
-    }
-
-    useEffect(() => {
-
-        firstRequest().then(r => setLoading(false))
-    }, []);
+    }, [pageTable])
 
     return (
         <>
@@ -122,28 +55,29 @@ const AdminApprovals = () => {
                             </tr>
                         </TableHeader>
                         <TableBody>
-                            {dataTable.map((user, i) => (
+                            {dataTable.map((value, i) => (
                                 <TableRow key={i}>
                                     <TableCell>
-                                        {user.avatarImageUrl ?
-                                            <img src={user.avatarImageUrl} className="rounded-full h-12 w-12" alt="Avatar" />
+                                        {value.user.avatarImageUrl ?
+                                            <img src={value.user.avatarImageUrl} className="rounded-full h-12 w-12"
+                                                 alt="Avatar"/>
                                             :
                                             <DefaultAvatar/>
                                         }
                                     </TableCell>
                                     <TableCell>
-                                        <p className="font-semibold">{user.firstName} {user.lastName}</p>
+                                        <p className="font-semibold">{`${value.user.firstName} ${value.user.lastName}`}</p>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center text-sm">
                                             {/* <Avatar className="hidden mr-3 md:block" src={user.avatar} alt="User avatar" /> */}
                                             <div>
-                                                <p className="font-semibold">{user.email}</p>
+                                                <p className="font-semibold">{value.user.email}</p>
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        {user.verified ?
+                                        {value.verified ?
                                             <span
                                                 className="px-3 py-1  text-sm rounded-full text-green-600  bg-green-200">
                                             Verified
@@ -160,7 +94,7 @@ const AdminApprovals = () => {
                                         <Link
                                             to={{
                                                 pathname: `${url}/details`,
-                                                state: {userId: user.id}
+                                                state: {userId: value.uid}
                                             }}
                                         >
                                             <Button> View </Button>
@@ -171,15 +105,17 @@ const AdminApprovals = () => {
                         </TableBody>
                     </Table>
                     <TableFooter>
-                        <TableNav isFirstPage={isFirstPage} isLastPage={isLastPage} onPrevious={handlePreviousClick}
-                                  onNext={handleNextClick}/>
+                        <Pagination
+                            totalResults={totalResults}
+                            resultsPerPage={resultsPerPage}
+                            onChange={onPageChangeTable}
+                            label="Table navigation"
+                        />
                     </TableFooter>
                 </TableContainer>
                 :
                 <LoadingDots/>
             }
-
-
         </>
 
     );

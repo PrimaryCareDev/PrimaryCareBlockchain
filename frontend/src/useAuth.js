@@ -7,10 +7,10 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
-    confirmPasswordReset
+    confirmPasswordReset,
+    deleteUser
 } from "firebase/auth";
-
-import {getFirestore, doc, setDoc} from "firebase/firestore/lite";
+import {axiosInstance, userType} from "./constants";
 
 
 // Add your Firebase credentials
@@ -43,7 +43,6 @@ export function AuthProvider({children}) {
 
 
     const auth = getAuth();
-    const db = getFirestore();
 
     // Wrap any Firebase methods we want to use making sure ...
     // ... to save the user to state.
@@ -51,22 +50,41 @@ export function AuthProvider({children}) {
         return signInWithEmailAndPassword(auth, email, password)
     };
 
-    const doctorSignUp = async (email, password) => {
+    const registerAccount = async (email, password, userRole) => {
 
         return await createUserWithEmailAndPassword(auth, email, password)
             .then(async (value) => {
 
-                const docRef = doc(db, "doctors", value.user.uid)
-                await setDoc(docRef, {
-                    email: value.user.email,
-                    verified: false,
-                    submittedForVerification: false
-                });
-                console.log("Document written with ID: ", docRef.id);
+                // try {
+                let apiRegistrationPath = ""
+                switch (userRole) {
+                    case userType.DOCTOR:
+                        apiRegistrationPath = "/registerDoctor"
+                        break
+                    case userType.PATIENT:
+                        apiRegistrationPath = "/registerPatient"
+                        break
+                    default:
+                        return
+                }
 
+
+                const res = await axiosInstance.post(apiRegistrationPath, {})
+                    .catch(async function (error) {
+                        console.log(error)
+                        await deleteUser(value.user)
+                        if (!error.status) {
+                            throw new Error("Internal network error. Please try again.")
+                        } else {
+                            throw error
+                        }
+                    })
+
+                return res
             })
 
     };
+
 
     const signout = () => {
         return signOut(auth)
@@ -105,7 +123,7 @@ export function AuthProvider({children}) {
         userData,
         setUserData,
         signin,
-        doctorSignUp,
+        registerAccount,
         signout,
         sendPasswordResetEmail,
         confirmPasswordReset,

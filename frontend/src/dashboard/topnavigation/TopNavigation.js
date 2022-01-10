@@ -4,8 +4,11 @@ import {Menu, Transition} from '@headlessui/react'
 import classNames from "classnames";
 import {MenuIcon} from "@heroicons/react/solid";
 import {useAuth} from "../../useAuth";
-import {useHistory} from "react-router-dom";
+import {useHistory, useRouteMatch} from "react-router-dom";
 import DefaultAvatar from "../../components/DefaultAvatar";
+import {userType} from "../../constants";
+import {Link} from "react-router-dom";
+
 
 export default function TopNavigation() {
     const {toggle} = useToggle();
@@ -15,6 +18,7 @@ export default function TopNavigation() {
     const {signout, user} = useAuth()
     const history = useHistory()
     const {userData} = useAuth()
+    let {url, path} = useRouteMatch();
 
     useEffect(() => {
 
@@ -33,6 +37,21 @@ export default function TopNavigation() {
         } catch {
             console.log("Failed to log out")
         }
+    }
+
+    function getAccountSettingsPath() {
+        // console.log(path + " " + url)
+        // if (userData) {
+        //     switch (userData.role) {
+        //         case userType.DOCTOR:
+        //             return "/doctor/accountSettings"
+        //         case userType.PATIENT:
+        //             return "/patient/accountSettings"
+        //         case userType.ADMIN:
+        //             return "/admin/accountSettings"
+        //     }
+        // }
+        return path + "/accountSettings"
     }
 
     return (
@@ -88,11 +107,11 @@ export default function TopNavigation() {
                         <Transition
                             as={Fragment}
                             enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
                             leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
                         >
 
                             <Menu.Items
@@ -106,8 +125,8 @@ export default function TopNavigation() {
                                 <div className="py-1">
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <a
-                                                href="#account-settings"
+                                            <Link
+                                                to={getAccountSettingsPath()}
                                                 className={`${
                                                     active
                                                         ? "bg-gray-100 text-gray-900"
@@ -115,7 +134,7 @@ export default function TopNavigation() {
                                                 } flex justify-between w-full px-4 py-2 text-sm leading-5 text-left`}
                                             >
                                                 Account settings
-                                            </a>
+                                            </Link>
                                         )}
                                     </Menu.Item>
                                 </div>

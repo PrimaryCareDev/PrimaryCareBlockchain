@@ -1,17 +1,16 @@
-import React from 'react';
-import { Fragment } from 'react'
-import { Popover, Transition } from '@headlessui/react'
-import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import React, {Fragment} from 'react';
+import {Popover, Transition} from '@headlessui/react'
+import {MenuIcon, XIcon} from '@heroicons/react/outline'
 import '../index.css';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import logo from '../healthlink_logo.svg';
 
 
 const navigation = [
-    { name: 'Product', href: '#' },
-    { name: 'Features', href: '#' },
-    { name: 'Marketplace', href: '#' },
-    { name: 'Company', href: '#' },
+    {name: 'Product', href: '#'},
+    {name: 'Features', href: '#'},
+    {name: 'Marketplace', href: '#'},
+    {name: 'Company', href: '#'},
 ]
 
 const HomePage = () => {
@@ -26,13 +25,14 @@ const HomePage = () => {
                         preserveAspectRatio="none"
                         aria-hidden="true"
                     >
-                        <polygon points="50,0 100,0 50,100 0,100" />
+                        <polygon points="50,0 100,0 50,100 0,100"/>
                     </svg>
 
                     <Popover>
                         <div className="relative pt-6 px-4 sm:px-6 lg:px-8">
-                            <nav className="relative flex items-center justify-between sm:h-10 lg:justify-start" aria-label="Global">
-                                <div className="flex items-center flex-grow flex-shrink-0 lg:flex-grow-0">
+                            <nav className="relative flex items-center justify-between sm:h-10 lg:justify-start"
+                                 aria-label="Global">
+                                <div className="flex items-center grow shrink-0 lg:grow-0">
                                     <div className="flex items-center justify-between w-full md:w-auto">
                                         <a href="/">
                                             <span className="sr-only">Workflow</span>
@@ -40,13 +40,14 @@ const HomePage = () => {
                                             {/*    className="h-8 w-auto sm:h-10"*/}
                                             {/*    src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"*/}
                                             {/*/>*/}
-                                            <img src={logo} className="h-8 w-auto sm:h-12 text-indigo-600" alt="logo" />
+                                            <img src={logo} className="h-8 w-auto sm:h-12 text-indigo-600" alt="logo"/>
 
                                         </a>
                                         <div className="-mr-2 flex items-center md:hidden">
-                                            <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                                            <Popover.Button
+                                                className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                                                 <span className="sr-only">Open main menu</span>
-                                                <MenuIcon className="h-6 w-6" aria-hidden="true" />
+                                                <MenuIcon className="h-6 w-6" aria-hidden="true"/>
                                             </Popover.Button>
                                         </div>
                                     </div>
@@ -77,7 +78,8 @@ const HomePage = () => {
                                 focus
                                 className="absolute z-10 top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden"
                             >
-                                <div className="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
+                                <div
+                                    className="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
                                     <div className="px-5 pt-4 flex items-center justify-between">
                                         <div>
                                             {/*<img*/}
@@ -85,12 +87,13 @@ const HomePage = () => {
                                             {/*    src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"*/}
                                             {/*    alt=""*/}
                                             {/*/>*/}
-                                            <img src={logo} className="h-8 w-auto" alt="logo" />
+                                            <img src={logo} className="h-8 w-auto" alt="logo"/>
                                         </div>
                                         <div className="-mr-2">
-                                            <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                                            <Popover.Button
+                                                className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                                                 <span className="sr-only">Close main menu</span>
-                                                <XIcon className="h-6 w-6" aria-hidden="true" />
+                                                <XIcon className="h-6 w-6" aria-hidden="true"/>
                                             </Popover.Button>
                                         </div>
                                     </div>
@@ -120,7 +123,9 @@ const HomePage = () => {
                         <div className="sm:text-center lg:text-left">
                             <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                                 <span className="block xl:inline">Welcome to</span>{' '}
-                                 <span className="block text-indigo-600 flex items-center"><img src={logo} className="h-8 w-auto sm:h-12 inline mr-1" alt="logo" />HealthLink</span>
+                                <span className="block text-indigo-600 flex items-center"><img src={logo}
+                                                                                               className="h-8 w-auto sm:h-12 inline mr-1"
+                                                                                               alt="logo"/>HealthLink</span>
 
                             </h1>
                             <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
@@ -136,13 +141,14 @@ const HomePage = () => {
                                         </button>
                                     </Link>
                                 </div>
-                                <div className="mt-3 sm:mt-0 sm:ml-3">
-                                    <a
-                                        href="#"
-                                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
-                                    >
-                                        Patient
-                                    </a>
+                                <div className="rounded-md shadow mt-3 sm:mt-0 sm:ml-3">
+                                    <Link to="/patient">
+                                        <button
+                                            className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
+                                        >
+                                            Patient
+                                        </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
