@@ -26,10 +26,9 @@ const AdminApprovalDetails = () => {
         try {
             setLoading(true)
             const doctorId = data.state.userId
-
             const res = await axiosInstance.get(`/admin/getDoctorDetails?doctorUid=${doctorId}`)
             setDoctorDetails(res.data)
-
+            setLoading(false)
 
         } catch (e) {
             console.log(e.message)
@@ -67,7 +66,6 @@ const AdminApprovalDetails = () => {
     useEffect(async () => {
         if (data.state) {
             await refreshDoctorDetails()
-            setLoading(false)
 
         } else {
             history.push("/admin/pending")
