@@ -26,6 +26,9 @@ model Patient {
   uid                      String   @id(map: "Patient_pkey") @db.VarChar(255)
   doctors                  DoctorOnPatient[]
   user                     User     @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "patient_user_uid_fk")
+  verified                 Boolean? @default(false)
+  birthDate                DateTime? @db.Date
+  sex                      Sex?
   @@map("patient")
 }
 
@@ -80,4 +83,9 @@ enum RelationshipStatus {
   REJECTED
   BLOCKED
   DELETED
+}
+
+enum Sex {
+  MALE
+  FEMALE
 }

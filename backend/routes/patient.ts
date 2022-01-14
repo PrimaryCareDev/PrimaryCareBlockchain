@@ -4,6 +4,7 @@ import {RelationshipStatus, Role} from "@prisma/client";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime";
 import {MyRequest} from "../app";
 import express from "express";
+import {DateTime} from "luxon";
 
 const patientRouter = express.Router()
 
@@ -387,6 +388,70 @@ patientRouter.post('/cancelDoctorInvitation',
         }
 
         res.status(200).send()
+    }
+)
+
+patientRouter.post('/verifyPatient',
+    celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            firstName: Joi.string().allow(""),
+            lastName: Joi.string().allow(""),
+            sex: Joi.string().required(),
+            birthDate: Joi.string().required(),
+            avatarImageUrl: Joi.string().allow(""),
+        })
+    }),
+    async (req: MyRequest, res) => {
+        const user = req.currentUser!
+
+        console.log("Verifying patient")
+
+        const birthDate = DateTime.fromSQL(req.body.birthDate)
+
+        if (!birthDate.isValid) {
+            return res.status(400).send("Invalid date");
+        }
+
+        try {
+            await prisma.$transaction([
+                prisma.user.update({
+                    where: {
+                        uid: user.uid
+                    },
+                    data: {
+                        firstName: req.body.firstName,
+                        lastName: req.body.lastName,
+                        avatarImageUrl: req.body.avatarImageUrl
+                    }
+                }),
+                prisma.patient.update({
+                    where: {
+                        uid: user.uid
+                    },
+                    data: {
+                        birthDate: birthDate.toJSDate(),
+                        sex: req.body.sex,
+                        verified: true
+                    }
+                })
+            ])
+        }
+        catch (e) {
+            if (e instanceof PrismaClientKnownRequestError) {
+                console.log("Prisma error code: " + e.code)
+                // if (e.code==='P2025') {
+                //     return res.status(400).send("Could not find pre-existing connection with doctor.")
+                // }
+            } else if (e instanceof Error) {
+                console.log(e.message)
+            }
+
+            return res.status(500).send("Something went wrong. Please try again.")
+        }
+
+        return res.status(200).send('Patient verification submitted for ' + user.email);
+
+
     }
 )
 
