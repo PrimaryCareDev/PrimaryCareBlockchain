@@ -17,7 +17,7 @@ const Patient = () => {
 
     async function getPatientData() {
         try {
-
+            setLoading(true)
             const res = await axiosInstance.get("/getUserDetails")
 
             if (res.data.patient != null) {
@@ -64,7 +64,7 @@ const Patient = () => {
                     ?
                     <Switch>
                         <Route path={`${path}`} exact={true}>
-                            <PatientHome/>
+                            <PatientHome onSubmitVerification={getPatientData}/>
                         </Route>
                         <Route path={`${path}/doctorList`}>
                             <PatientDoctorList/>

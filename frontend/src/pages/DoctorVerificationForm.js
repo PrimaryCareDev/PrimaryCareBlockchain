@@ -165,14 +165,13 @@ const DoctorVerificationForm = (props) => {
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="medical-practice" className="block text-sm font-medium text-gray-700">
                                         Practice/Clinic Name
                                     </label>
                                     <input
                                         type="text"
-                                        name="email-address"
-                                        id="email-address"
-                                        autoComplete="email"
+                                        name="medical-practice"
+                                        id="medical-practice"
                                         className={classnames('mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md',
                                             {
                                                 'border-red-500': errors.medicalPractice
