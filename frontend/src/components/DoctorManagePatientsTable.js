@@ -31,19 +31,6 @@ const PatientDoctorTable = (props) => {
         onRefresh()
     }
 
-    // function RelationStatusBadge(props) {
-    //
-    //     const relationship = props.data
-    //     if (relationship === null || relationship.status === requestStatus.REJECTED) {
-    //         return null
-    //     } else if (relationship.status === requestStatus.REQUESTED) {
-    //         return <Badge type="warning">pending</Badge>
-    //     } else if (relationship.status === requestStatus.ACCEPTED) {
-    //         return <Badge type="success">connected</Badge>
-    //     }
-    //
-    // }
-
     return (
         <>
             <TableContainer className="mb-8 max-w-xl">
@@ -80,7 +67,6 @@ const PatientDoctorTable = (props) => {
                                     }
                                 </TableCell>
                                 <TableCell>
-                                    {/*<StatusBadge doctors={value.doctors}/>*/}
                                     <p className="font-semibold">{`${value.user.email}`}</p>
                                 </TableCell>
                                 <TableCell>

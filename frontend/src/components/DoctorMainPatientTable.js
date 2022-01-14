@@ -14,6 +14,7 @@ import TableFooter from "./TableFooter";
 import TableContainer from "./TableContainer";
 import LoadingDots from "./LoadingDots";
 import Pagination from "./Pagination";
+import {Link, useRouteMatch} from "react-router-dom";
 
 const DoctorMainPatientTable = () => {
 
@@ -21,11 +22,10 @@ const DoctorMainPatientTable = () => {
     const [dataTable, setDataTable] = useState()
     const [pageTable, setPageTable] = useState()
     const [totalResults, setTotalResults] = useState(0)
+    const { url } = useRouteMatch();
+
 
     const resultsPerPage = 10
-
-
-
 
     async function getMyPatients() {
         const res = await axiosInstance.get(`/doctor/getPatients`)
@@ -42,10 +42,6 @@ const DoctorMainPatientTable = () => {
 
     function onPageChangeTable(p) {
         setPageTable(p)
-    }
-
-    function openModal(value) {
-
     }
 
     return (
@@ -67,9 +63,15 @@ const DoctorMainPatientTable = () => {
                         <TableBody>
                             {dataTable.map((value, i) => (
                                 <TableRow key={i}>
-                                    {/*<TableCell>*/}
-                                    {/*    <Button onClick={() => openModal(value)} icon={SearchIcon}/>*/}
-                                    {/*</TableCell>*/}
+                                    <TableCell>
+                                        {/*<Link to={`${url}/${value.user.uid}`}>*/}
+                                        <Link to={{
+                                            pathname: `${url}/${value.user.uid}`,
+                                            state: {value}
+                                        }}>
+                                            <Button icon={SearchIcon}/>
+                                        </Link>
+                                    </TableCell>
                                     <TableCell>
                                         {value.user.avatarImageUrl ?
                                             <img src={value.user.avatarImageUrl} className="rounded-full h-12 w-12"
@@ -83,7 +85,6 @@ const DoctorMainPatientTable = () => {
                                             <Badge type="neutral">no name</Badge>
                                             :
                                             <p className="font-semibold">{`${value.user.firstName} ${value.user.lastName}`}</p>
-
                                         }
                                     </TableCell>
                                     <TableCell>

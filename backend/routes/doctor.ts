@@ -4,7 +4,6 @@ import express from "express"
 import prisma from "../prisma-client";
 import {celebrate, Joi, Segments} from "celebrate";
 import {RelationshipStatus, Role} from "@prisma/client";
-import patientRouter from "./patient";
 
 const doctorRouter = express.Router()
 
@@ -366,5 +365,54 @@ doctorRouter.get('/getPatients', async (req: MyRequest, res) => {
 
     res.json(patientList)
 })
+
+doctorRouter.get('/viewPatientDetails',
+    celebrate({
+        [Segments.QUERY]: Joi.object().keys({
+            patientUid: Joi.string().required()
+        })
+    }),
+    async (req: MyRequest, res) => {
+
+        const user = req.currentUser!
+        const {patientUid} = req.query
+
+
+        const requestedPatient = await prisma.patient.findUnique({
+            where: {
+                uid: patientUid as string
+            },
+            include: {
+                user: true,
+                doctors: {
+                    where: {
+                        doctorUid: user.uid
+                    }
+                }
+            }
+        })
+
+        if (requestedPatient === null) {
+            return res.status(400).send("Could not find patient with that id.")
+        }
+
+        let hasAccess = false
+
+        for (let i=0 ; i < requestedPatient.doctors.length; i++) {
+            if (requestedPatient.doctors[i].doctorUid === user.uid && requestedPatient.doctors[i].status === RelationshipStatus.ACCEPTED) {
+                hasAccess = true
+                break
+            }
+        }
+        if (!hasAccess) {
+            return res.status(200).send({...requestedPatient, hasAccess: false})
+        }
+        else {
+            return res.status(200).send({...requestedPatient, hasAccess: true})
+
+        }
+    }
+)
+
 
 export default doctorRouter

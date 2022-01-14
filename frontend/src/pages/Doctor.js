@@ -8,6 +8,7 @@ import {axiosInstance, userType} from "../constants";
 import LoadingDots from "../components/LoadingDots";
 import DoctorPatientManagement from "./DoctorPatientManagement";
 import DoctorAccountSettings from "./DoctorAccountSettings";
+import DoctorPatientView from "./DoctorPatientView";
 
 const Doctor = () => {
     let {url} = useRouteMatch();
@@ -17,7 +18,7 @@ const Doctor = () => {
 
     async function getDoctorDetails() {
         try {
-
+            setLoading(true)
             const res = await axiosInstance.get("/getUserDetails")
 
             if (res.data.doctor != null) {
@@ -65,8 +66,11 @@ const Doctor = () => {
                         <Route path={`${url}`} exact={true}>
                             <DoctorHome onSubmitRegistration={getDoctorDetails}/>
                         </Route>
-                        <Route path={`${url}/patients`}>
+                        <Route exact path={`${url}/patients`}>
                             <DoctorPatientList/>
+                        </Route>
+                        <Route path={`${url}/patients/:id`}>
+                            <DoctorPatientView/>
                         </Route>
                         <Route path={`${url}/managePatients`}>
                             <DoctorPatientManagement/>
