@@ -132,10 +132,10 @@ const AdminApprovalDetails = () => {
                                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt className="text-sm font-medium text-gray-500">Profile Picture</dt>
                                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                            {doctorDetails.avatarImageUrl ?
+                                            {doctorDetails.user.avatarImageUrl ?
                                                 <>
                                                     {avatarImageLoading && <LoadingSpinner/>}
-                                                    <img src={doctorDetails.avatarImageUrl}
+                                                    <img src={doctorDetails.user.avatarImageUrl}
                                                          onLoad={() => setAvatarImageLoading(false)}
                                                          className="rounded-full" alt="Avatar"/>
                                                 </>

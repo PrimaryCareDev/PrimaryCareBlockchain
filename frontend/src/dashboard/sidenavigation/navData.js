@@ -51,5 +51,10 @@ export const patientNav = [
     icon: <DoctorIcon />,
     link: '/patient/doctorList',
   },
+  {
+    title: 'Your Memos',
+    icon: <DocumentationIcon />,
+    link: '/patient/memos',
+  },
 
 ]

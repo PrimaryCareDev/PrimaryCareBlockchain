@@ -13,6 +13,8 @@ import {useAuth} from "../useAuth";
 import { DateTime } from "luxon";
 import SubTitle from "../components/SubTitle";
 
+
+
 const PatientVerificationForm = (props) => {
     const methods = useForm({mode: "onBlur"});
     const {register, formState: {errors}, handleSubmit} = methods;
@@ -29,7 +31,6 @@ const PatientVerificationForm = (props) => {
         try {
 
             const userBirthDate = DateTime.fromObject({ year: data.birthDateYear, month: data.birthDateMonth, day: data.birthDateDay });
-            console.log(userBirthDate.toSQLDate())
 
             if (!userBirthDate.isValid) {
                 setBirthDateError(true)

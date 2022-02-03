@@ -3,6 +3,9 @@ import Overlay from './provider/overlay';
 import TopNavigation from './topnavigation/TopNavigation';
 import SideNavigation from './sidenavigation';
 import { useToggle } from './provider/context';
+import {useEffect, useState} from "react";
+import {axiosInstance} from "../constants";
+import {toast, ToastContainer} from "react-toastify";
 
 const style = {
   open: 'lg:w-full',
@@ -14,6 +17,21 @@ const style = {
 
 export default function DashboardLayout({ isValidRole, children }) {
   const { open } = useToggle();
+
+  useEffect(() => {
+    axiosInstance.interceptors.response.use(function (response) {
+      // Any status code that lie within the range of 2xx cause this function to trigger
+      // Do something with response data
+      return response;
+    }, function (error) {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      // Do something with response error
+      toast.error("Something went wrong! Please try again.", {theme: "colored"});
+      return Promise.reject(error);
+    });
+  }, []);
+
+
   return (
     <div className={style.container}>
       <div className="flex items-start">

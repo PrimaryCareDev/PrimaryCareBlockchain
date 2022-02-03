@@ -4,9 +4,9 @@ import express from "express"
 import prisma from "../prisma-client";
 import {celebrate, Joi, Segments} from "celebrate";
 
-const baseRouter = express.Router()
+const authRouter = express.Router()
 
-baseRouter.get('/verifyIdToken', async (req: MyRequest, res) => {
+authRouter.get('/verifyIdToken', async (req: MyRequest, res) => {
 
     console.log("Returning Verification")
     const user = req.currentUser
@@ -15,7 +15,7 @@ baseRouter.get('/verifyIdToken', async (req: MyRequest, res) => {
 
 })
 
-baseRouter.post('/registerDoctor', async (req: MyRequest, res) => {
+authRouter.post('/registerDoctor', async (req: MyRequest, res) => {
 
     const user = req.currentUser!
     console.log("Trying to create Doctor record for " + user.email)
@@ -55,7 +55,7 @@ baseRouter.post('/registerDoctor', async (req: MyRequest, res) => {
     }
 })
 
-baseRouter.post('/registerPatient', async (req: MyRequest, res) => {
+authRouter.post('/registerPatient', async (req: MyRequest, res) => {
 
     const user = req.currentUser!
     console.log("Trying to create Patient record for " + user.email)
@@ -95,7 +95,7 @@ baseRouter.post('/registerPatient', async (req: MyRequest, res) => {
     }
 })
 
-baseRouter.get('/getUserDetails', async (req: MyRequest, res) => {
+authRouter.get('/getUserDetails', async (req: MyRequest, res) => {
     const user = req.currentUser!
 
     console.log("Getting user details for " + user.email)
@@ -130,7 +130,7 @@ baseRouter.get('/getUserDetails', async (req: MyRequest, res) => {
 
 })
 
-baseRouter.post('/doctorVerificationSubmission', async (req: MyRequest, res) => {
+authRouter.post('/doctorVerificationSubmission', async (req: MyRequest, res) => {
 
     const user = req.currentUser!
 
@@ -166,7 +166,7 @@ baseRouter.post('/doctorVerificationSubmission', async (req: MyRequest, res) => 
 
 })
 
-baseRouter.post('/updateAvatarImage',
+authRouter.post('/updateAvatarImage',
     celebrate({
         [Segments.BODY]: Joi.object().keys({
             avatarImageUrl: Joi.string().required()
@@ -189,7 +189,7 @@ baseRouter.post('/updateAvatarImage',
         res.status(200).send()
 })
 
-baseRouter.post('/updateName',
+authRouter.post('/updateName',
     celebrate({
         [Segments.BODY]: Joi.object().keys({
             firstName: Joi.string().required(),
@@ -214,4 +214,4 @@ baseRouter.post('/updateName',
         res.status(200).send()
     })
 
-export default baseRouter
+export default authRouter

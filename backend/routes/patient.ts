@@ -1,10 +1,11 @@
 import {celebrate, Joi, Segments} from "celebrate";
 import prisma from "../prisma-client";
-import {RelationshipStatus, Role} from "@prisma/client";
+import {RelationshipStatus, Role, Doctor} from "@prisma/client";
 import {PrismaClientKnownRequestError} from "@prisma/client/runtime";
-import {MyRequest} from "../app";
+import {MyRequest, stripe} from "../app";
 import express from "express";
 import {DateTime} from "luxon";
+import doctor from "./doctor";
 
 const patientRouter = express.Router()
 
@@ -48,8 +49,9 @@ patientRouter.get('/searchDoctors',
     async (req: MyRequest, res) => {
 
         const user = req.currentUser!
-        const {query} = req.body
+        const query:string = req.query.query as string
 
+        //This query searches across firstName, lastName, email, medical practice, whether they contain query str
         const doctorList = await prisma.doctor.findMany({
             where: {
                 OR: [
@@ -62,9 +64,9 @@ patientRouter.get('/searchDoctors',
                 verified: true
             },
             select: {
+                uid: true,
                 medicalPractice: true,
                 user: true,
-
                 patients: {
                     where: {
                         patientUid: user.uid
@@ -73,11 +75,37 @@ patientRouter.get('/searchDoctors',
             },
 
         })
-        if (doctorList.length === 0) {
-            return res.status(400).send("Could not find any matching Doctor. Please try a new search query.")
-        }
 
-        res.json(doctorList)
+
+        //This next section searches for full name by concatenating firstName and lastName
+        //this query raw unsafe and the next prisma.findMany could be combined into a singular custom SQL for better perf
+        const result = await prisma.$queryRawUnsafe<Doctor[]>(
+            `SELECT d.uid FROM "doctor" d INNER JOIN "user" u on d.uid = u.uid WHERE CONCAT(u."firstName",' ',u."lastName") ILIKE CONCAT('%',$1::text,'%');`,
+            query
+        )
+        const flattened = result.map((v) => v.uid)
+
+        const nameList = await prisma.doctor.findMany({
+            where: {
+                uid: {in: flattened},
+                verified: true
+            },
+            select: {
+                uid: true,
+                medicalPractice: true,
+                user: true,
+                patients: {
+                    where: {
+                        patientUid: user.uid
+                    }
+                }
+            },
+        })
+
+        const nameListIds = new Set(nameList.map(d => d.uid));
+        const merged = [...nameList, ...doctorList.filter(d => !nameListIds.has(d.uid))];
+
+        return res.json(merged)
     }
 )
 
@@ -257,7 +285,7 @@ patientRouter.post('/acceptDoctor',
             })
 
             if (record === null || (record.status != RelationshipStatus.REQUESTED && record.requester != Role.DOCTOR)) {
-                res.status(400).send("Could not find pre-existing request")
+                return res.status(400).send("Could not find pre-existing request")
             }
 
             await prisma.doctorOnPatient.update({
@@ -285,7 +313,7 @@ patientRouter.post('/acceptDoctor',
             return res.status(500).send("Something went wrong. Please try again.")
         }
 
-        res.status(200).send()
+        return res.status(200).send()
     }
 )
 
@@ -310,7 +338,7 @@ patientRouter.post('/rejectDoctor',
             })
 
             if (record === null || (record.status != RelationshipStatus.REQUESTED && record.requester != Role.DOCTOR)) {
-                res.status(400).send("Could not find pre-existing request")
+                return res.status(400).send("Could not find pre-existing request")
             }
 
             await prisma.doctorOnPatient.update({
@@ -363,7 +391,7 @@ patientRouter.post('/cancelDoctorInvitation',
             })
 
             if (record === null || (record.status != RelationshipStatus.REQUESTED && record.requester != Role.PATIENT)) {
-                res.status(400).send("Could not find valid pre-existing request")
+                return res.status(400).send("Could not find valid pre-existing request")
             }
 
             await prisma.doctorOnPatient.delete({
@@ -387,7 +415,7 @@ patientRouter.post('/cancelDoctorInvitation',
             return res.status(500).send("Something went wrong. Please try again.")
         }
 
-        res.status(200).send()
+        return res.status(200).send()
     }
 )
 
@@ -435,8 +463,7 @@ patientRouter.post('/verifyPatient',
                     }
                 })
             ])
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 console.log("Prisma error code: " + e.code)
                 // if (e.code==='P2025') {
@@ -454,5 +481,197 @@ patientRouter.post('/verifyPatient',
 
     }
 )
+
+patientRouter.get('/getAllMemos', celebrate({
+        [Segments.QUERY]: {
+            pageNum: Joi.number().integer().required(),
+            perPage: Joi.number().integer().required(),
+        }
+    }),
+    async (req: MyRequest, res) => {
+
+
+        const pageNum = parseInt(<string>req.query.pageNum)
+        const perPage = parseInt(<string>req.query.perPage)
+        const user = req.currentUser!
+
+        const results = await prisma.memo.findMany({
+            skip: (pageNum - 1) * perPage,
+            take: perPage,
+            where: {
+                patientUid: user.uid
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            select: {
+                id: true,
+                doctor: {
+                    select: {
+                        user: {
+                            select: {
+                                firstName: true,
+                                lastName: true
+                            }
+                        }
+                    }
+                },
+                diagnoses: true,
+                createdAt: true,
+                patientHasAccess: true
+            }
+        })
+
+        const totalCount = await prisma.memo.count({
+            where: {
+                patientUid: user.uid,
+            }
+        })
+
+        return res.json({totalCount, results})
+    }
+)
+
+patientRouter.get('/getMemo', celebrate({
+        [Segments.QUERY]: {
+            memoId: Joi.number().required(),
+        }
+    }),
+    async (req: MyRequest, res) => {
+        const user = req.currentUser!
+        const memoId = parseInt(<string>req.query.memoId)
+
+
+        const foundMemo = await prisma.memo.findUnique({
+            where: {
+                id: memoId
+            },
+            include: {
+                doctor: {
+                    select: {
+                        user: true
+                    }
+                },
+                patient: true,
+                diagnoses: true,
+                prescriptions: true
+            }
+        })
+
+        if (foundMemo === null) {
+            return res.status(400).send("Memo id not found.")
+        }
+
+        if (foundMemo.patient.uid !== user.uid) {
+            return res.status(401).send("You do not have access to this memo.")
+        }
+
+        if (!foundMemo.patientHasAccess) {
+            return res.status(401).send("You have not purchased this memo and do not have access to it.")
+        }
+
+        return res.json(foundMemo)
+    }
+)
+
+patientRouter.post('/purchaseMemo',
+    celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            memoId: Joi.number().required()
+        })
+    }),
+    async (req: MyRequest, res) => {
+
+        const {memoId} = req.body
+        const domainUrl = process.env.DOMAIN
+        const user = req.currentUser!
+
+        const userRecord = await prisma.user.findUnique({
+            where: {
+                uid: user.uid
+            }
+        })
+
+        if (userRecord === null) {
+            return res.status(400).send("User id not found")
+        }
+
+        const memoRecord = await prisma.memo.findUnique({
+            where: {
+                id: memoId
+            },
+            include: {
+                doctor: {
+                    include: {
+                        user: true
+                    }
+                }
+            }
+        })
+
+        if (memoRecord === null) {
+            return res.status(400).send("Memo id not found")
+        }
+
+        const doctorName = memoRecord.doctor.user.firstName + " " + memoRecord.doctor.user.lastName
+        const formattedDate = DateTime.fromJSDate(memoRecord.createdAt).toLocaleString(DateTime.DATETIME_MED)
+
+        let customerId = userRecord.stripeCustomerId
+
+        if (customerId === null) {
+            let formattedName = ""
+
+            if (!userRecord.firstName && !userRecord.lastName) {
+                formattedName = ""
+            }
+            else if (!userRecord.firstName && userRecord.lastName) {
+                formattedName = userRecord.lastName
+            }
+            else if (!userRecord.lastName && userRecord.firstName) {
+                formattedName = userRecord.firstName
+            } else {
+                formattedName = userRecord.firstName + " " + userRecord.lastName
+            }
+
+            const createdCustomer = await stripe.customers.create({
+                email: userRecord.email,
+                name: formattedName
+            })
+
+            await prisma.user.update({
+                where: {
+                    uid: user.uid
+                },
+                data: {
+                    stripeCustomerId: createdCustomer.id
+                }
+            })
+
+            customerId = createdCustomer.id
+
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: `Memo written by ${doctorName} on ${formattedDate}`,
+                        },
+                        unit_amount: 500,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `${domainUrl}/patient/memos/${memoId}?purchased=true`,
+            cancel_url: `${domainUrl}/patient/memos`,
+            customer: customerId,
+            client_reference_id: memoId
+        });
+
+        return res.json({url: session.url})
+    });
 
 export default patientRouter

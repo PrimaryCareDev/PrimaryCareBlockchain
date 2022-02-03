@@ -3,16 +3,14 @@ import classnames from "classnames";
 import Button from "./Button";
 import {useForm} from "react-hook-form";
 import {axiosInstance, getApiUrl} from "../constants";
-import PatientViewDoctorPopup from "../pages/PatientViewDoctorPopup";
 import PatientDoctorTable from "./PatientDoctorTable";
 import SubTitle from "./SubTitle";
-import {XIcon} from "@heroicons/react/solid";
 import {XCircleIcon} from "@heroicons/react/outline";
 
 const PatientSearchDoctors = () => {
 
     const {register, handleSubmit, formState: {errors}, reset} = useForm();
-    const [error, setError] = useState(false)
+    const [searchError, setSearchError] = useState("")
     const [loading, setLoading] = useState(false)
     const [searchResults, setSearchResults] = useState()
     const [showTable, setShowTable] = useState(false)
@@ -21,15 +19,18 @@ const PatientSearchDoctors = () => {
 
     async function onSubmit(data) {
         setLoading(true)
-        setError(false)
+        setSearchError("")
         setShowTable(false)
 
         const res = await axiosInstance.get(`/patient/searchDoctors?query=${data.queryStr}`)
             .catch(function (error) {
-                setError(error.response.data)
+                setSearchError(error.response.data)
             })
 
-        if (res) {
+        if (res.data.length <= 0) {
+            setSearchError("No doctors found.")
+        }
+        else {
             setSearchResults(res.data)
             setShowTable(true)
         }
@@ -52,21 +53,24 @@ const PatientSearchDoctors = () => {
                     // className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     className={classnames('focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-96 shadow-sm sm:text-sm border-gray-300 rounded-md',
                         {
-                            'border-red-500': error || errors.queryStr
+                            'border-red-500': searchError || errors.queryStr
                         }
                     )}
                     {...register("queryStr", {
                         required: "Enter a search term",
-                        // pattern: {
-                        //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                        //     message: "Enter a valid e-mail address"
-                        // }
+                        minLength: {
+                            value: 2,
+                            message: "Minimum length of query is 2 characters"
+                        },
+                        onBlur: () => {
+                            setSearchError("")
+                        }
                     })}
                 />
                 <Button type="submit" className="mt-3 sm:mt-0 sm:ml-3" disabled={loading}>Search Doctors</Button>
             </form>
-            <span className="block text-sm font-medium text-red-700 mt-2">{error}</span>
-            <span className="block text-sm font-medium text-red-700 mt-2">{errors.queryStr?.message}</span>
+            {searchError && <span className="block text-sm font-medium text-red-700 mt-2">{searchError}</span>}
+            {errors.queryStr && <span className="block text-sm font-medium text-red-700 mt-2">{errors.queryStr?.message}</span>}
             {showTable &&
                 <>
                     <div className="flex items-center gap-1">

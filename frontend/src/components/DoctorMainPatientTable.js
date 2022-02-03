@@ -8,8 +8,7 @@ import Button from "./Button";
 import {SearchIcon} from "@heroicons/react/solid";
 import DefaultAvatar from "./DefaultAvatar";
 import Badge from "./Badge";
-import RelationshipStatusBadge from "./RelationshipStatusBadge";
-import {axiosInstance, userType} from "../constants";
+import {axiosInstance, formatDate, titleCase, userType} from "../constants";
 import TableFooter from "./TableFooter";
 import TableContainer from "./TableContainer";
 import LoadingDots from "./LoadingDots";
@@ -49,15 +48,16 @@ const DoctorMainPatientTable = () => {
             {loading ?
                 <LoadingDots/>
                 :
-                <TableContainer className="mb-8 max-w-xl">
+                <TableContainer className="mb-8 max-w-7xl">
                     <Table>
                         <TableHeader>
                             <tr>
-                                {/*<TableCell>Select</TableCell>*/}
+                                <TableCell>Select</TableCell>
                                 <TableCell>Image</TableCell>
                                 <TableCell>Name</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Status</TableCell>
+                                <TableCell>Sex</TableCell>
+                                <TableCell>Birth Date</TableCell>
+                                    <TableCell>Email</TableCell>
                             </tr>
                         </TableHeader>
                         <TableBody>
@@ -84,16 +84,18 @@ const DoctorMainPatientTable = () => {
                                         {(!value.user.firstName && !value.user.lastName) ?
                                             <Badge type="neutral">no name</Badge>
                                             :
-                                            <p className="font-semibold">{`${value.user.firstName} ${value.user.lastName}`}</p>
+                                            <p>{`${value.user.firstName} ${value.user.lastName}`}</p>
                                         }
                                     </TableCell>
+
                                     <TableCell>
-                                        {/*<StatusBadge doctors={value.doctors}/>*/}
-                                        <p className="font-semibold">{`${value.user.email}`}</p>
+                                        {titleCase(value.sex)}
                                     </TableCell>
                                     <TableCell>
-                                        {value.doctors[0] && <RelationshipStatusBadge relationship={value.doctors[0]}
-                                                                                      requesterIsSelf={value.doctors[0].requester === userType.DOCTOR}/>}
+                                        {formatDate(value.birthDate)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <p>{`${value.user.email}`}</p>
                                     </TableCell>
                                 </TableRow>
                             ))}
