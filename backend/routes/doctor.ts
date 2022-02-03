@@ -4,6 +4,7 @@ import express from "express"
 import prisma from "../prisma-client";
 import {celebrate, Joi, Segments} from "celebrate";
 import {RelationshipStatus, Role} from "@prisma/client";
+import axios from "axios";
 
 const doctorRouter = express.Router()
 
@@ -353,7 +354,7 @@ doctorRouter.get('/getPatients', async (req: MyRequest, res) => {
                 }
             }
         },
-        select: {
+        include: {
             user: true,
             doctors: {
                 where: {
@@ -398,7 +399,7 @@ doctorRouter.get('/viewPatientDetails',
 
         let hasAccess = false
 
-        for (let i=0 ; i < requestedPatient.doctors.length; i++) {
+        for (let i = 0; i < requestedPatient.doctors.length; i++) {
             if (requestedPatient.doctors[i].doctorUid === user.uid && requestedPatient.doctors[i].status === RelationshipStatus.ACCEPTED) {
                 hasAccess = true
                 break
@@ -406,11 +407,270 @@ doctorRouter.get('/viewPatientDetails',
         }
         if (!hasAccess) {
             return res.status(200).send({...requestedPatient, hasAccess: false})
-        }
-        else {
+        } else {
             return res.status(200).send({...requestedPatient, hasAccess: true})
 
         }
+    }
+)
+
+doctorRouter.get('/getIcdToken',
+    async (req: MyRequest, res) => {
+
+        const scope = "icdapi_access";
+        const grant_type = "client_credentials";
+
+        const icdRes = await axios.post("https://icdaccessmanagement.who.int/connect/token",
+            `grant_type=${grant_type}&scope=${scope}`
+            ,
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: `Basic ${btoa(`${process.env.ICD_CLIENT_ID}:${process.env.ICD_CLIENT_SECRET}`)}`
+                }
+            })
+
+        res.json(icdRes.data)
+
+    }
+)
+
+doctorRouter.post('/createMemo',
+    celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            patientUid: Joi.string().required(),
+            diagnoses: Joi.array().items(
+                Joi.object().keys({
+                    code: Joi.string().required(),
+                    title: Joi.string().required()
+                })),
+            prescriptions: Joi.array().items(
+                Joi.object().keys({
+                    drugName: Joi.string().required(),
+                    dosage: Joi.string().required(),
+                    unitsPerDose: Joi.string().required(),
+                    totalUnits: Joi.string().required(),
+                    frequency: Joi.string().required(),
+                })),
+            description: Joi.string().required()
+        })
+    }),
+    async (req: MyRequest, res) => {
+
+        const user = req.currentUser!
+        const {patientUid, diagnoses, description, prescriptions} = req.body
+
+        const test = await prisma.memo.create({
+            data: {
+                doctorUid: user.uid,
+                patientUid: patientUid,
+                description: description,
+                diagnoses: {
+                    create: [
+                        ...diagnoses
+                    ]
+                },
+                prescriptions: {
+                    create: [
+                        ...prescriptions
+                    ]
+                }
+            }
+        })
+
+        return res.status(200).send()
+    }
+)
+
+doctorRouter.get('/getAllMemos', celebrate({
+        [Segments.QUERY]: {
+            patientUid: Joi.string().required(),
+            pageNum: Joi.number().integer().required(),
+            perPage: Joi.number().integer().required(),
+
+        }
+    }),
+    async (req: MyRequest, res) => {
+
+
+        const pageNum = parseInt(<string>req.query.pageNum)
+        const perPage = parseInt(<string>req.query.perPage)
+        const patientUid = req.query.patientUid
+        const user = req.currentUser!
+
+        const currentRelationship = await prisma.doctorOnPatient.findUnique({
+            where: {
+                doctorUid_patientUid: {
+                    doctorUid: user.uid,
+                    patientUid: patientUid as string
+                }
+            }
+        })
+
+        if (currentRelationship == null || currentRelationship?.status != RelationshipStatus.ACCEPTED) {
+            return res.status(400).send("You do not have access to this patient's data.")
+        }
+
+        const results = await prisma.memo.findMany({
+            skip: (pageNum - 1) * perPage,
+            take: perPage,
+            where: {
+                patientUid: patientUid as string,
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            select: {
+                id: true,
+                doctor: {
+                    select: {
+                        user: {
+                            select: {
+                                firstName: true,
+                                lastName: true
+                            }
+                        }
+                    }
+                },
+                diagnoses: true,
+                createdAt: true
+            }
+        })
+
+        const totalCount = await prisma.memo.count({
+            where: {
+                patientUid: patientUid as string,
+            }
+        })
+
+        return res.json({totalCount, results})
+    }
+)
+
+doctorRouter.get('/getMemo', celebrate({
+        [Segments.QUERY]: {
+            memoId: Joi.number().required(),
+        }
+    }),
+    async (req: MyRequest, res) => {
+        const user = req.currentUser!
+        const memoId = parseInt(<string>req.query.memoId)
+
+
+        const foundMemo = await prisma.memo.findUnique({
+            where: {
+                id: memoId
+            },
+            include: {
+                doctor: {
+                    select: {
+                        user: true
+                    }
+                },
+                diagnoses: true,
+                prescriptions: true
+            }
+        })
+
+        if (foundMemo === null) {
+            return res.status(400).send("Memo id not found.")
+        }
+
+        const currentRelationship = await prisma.doctorOnPatient.findUnique({
+            where: {
+                doctorUid_patientUid: {
+                    doctorUid: user.uid,
+                    patientUid: foundMemo.patientUid
+                }
+            }
+        })
+
+        if (currentRelationship == null || currentRelationship?.status != RelationshipStatus.ACCEPTED) {
+            return res.status(401).send("You do not have access to this patient's data.")
+        }
+
+        const hasEditAccess = foundMemo.doctorUid === user.uid
+
+        return res.json({hasEditAccess, ...foundMemo})
+    }
+)
+
+doctorRouter.post('/editMemo',
+    celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            id: Joi.number().required(),
+            diagnoses: Joi.array().items(
+                Joi.object().keys({
+                    code: Joi.string().required(),
+                    title: Joi.string().required()
+                })),
+            prescriptions: Joi.array().items(
+                Joi.object().keys({
+                    drugName: Joi.string().required(),
+                    dosage: Joi.string().required(),
+                    unitsPerDose: Joi.string().required(),
+                    totalUnits: Joi.string().required(),
+                    frequency: Joi.string().required(),
+                })),
+            description: Joi.string().required()
+        })
+    }),
+    async (req: MyRequest, res) => {
+
+        const user = req.currentUser!
+        const {id, diagnoses, description, prescriptions} = req.body
+
+        const foundMemo = await prisma.memo.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        if (foundMemo === null) {
+            return res.status(400).send("Memo id not found.")
+        }
+
+        if (foundMemo.doctorUid !== user.uid) {
+            return res.status(401).send("You do not have permissions to edit this memo.")
+        }
+
+
+        await prisma.$transaction([
+
+            prisma.diagnosis.deleteMany({
+                where: {
+                    memoId: id
+                }
+            }),
+
+            prisma.prescription.deleteMany({
+                where: {
+                    memoId: id
+                }
+            }),
+
+            prisma.memo.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    description: description,
+                    updatedAt: new Date(),
+                    diagnoses: {
+                        create: [
+                            ...diagnoses
+                        ]
+                    },
+                    prescriptions: {
+                        create: [
+                            ...prescriptions
+                        ]
+                    }
+                }
+            })
+        ])
+
+        return res.status(200).send()
     }
 )
 

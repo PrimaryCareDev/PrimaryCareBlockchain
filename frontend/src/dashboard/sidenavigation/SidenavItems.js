@@ -3,6 +3,7 @@ import {Link, useLocation} from 'react-router-dom';
 import {useAuth} from "../../useAuth";
 import {doctorNav, adminNav, patientNav} from "./navData";
 import {userType} from "../../constants";
+import admin from "../../pages/Admin";
 
 const style = {
     title: `font-semibold mx-4 text-sm`,
@@ -21,24 +22,22 @@ const SidenavItems = ({isValidRole}) => {
     useEffect(() => {
 
         if (userData && isValidRole) {
-            switch (userData.role) {
-                case userType.DOCTOR:
-                    setNavData(doctorNav)
-                    break
-                case userType.ADMIN:
-                    setNavData(adminNav)
-                    break
-                case userType.PATIENT:
-                    setNavData(patientNav)
-                    break
-                default:
-                    setNavData(null)
-                    break
+            if (userData.role === userType.DOCTOR && userData.verified) {
+                setNavData(doctorNav)
+            }
+            else if (userData.role === userType.ADMIN) {
+                setNavData(adminNav)
+            }
+            else if (userData.role === userType.PATIENT) {
+                setNavData(patientNav)
+            }
+            else {
+                setNavData([])
             }
             setLoading(false)
         } else {
             setLoading(true)
-            setNavData(null)
+            setNavData([])
         }
 
     }, [isValidRole]);

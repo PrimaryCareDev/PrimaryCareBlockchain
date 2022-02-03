@@ -1,0 +1,11 @@
+.ectComponent .wordlist ul {
+    margin-left: 0 !important
+}
+
+.ectComponent .browser ul.toplevel, .ectComponent .entitylist ul.toplevel {
+    margin-left: 0 !important
+}
+
+.Toastify__toast-container {
+    width:400px
+}

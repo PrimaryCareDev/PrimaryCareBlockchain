@@ -19,6 +19,7 @@ model Doctor {
   submissionTimestamp      DateTime?
   user                     User     @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "doctor_user_uid_fk")
   patients                 DoctorOnPatient[]
+  memos                    Memo[]
   @@map("doctor")
 }
 
@@ -29,6 +30,7 @@ model Patient {
   verified                 Boolean? @default(false)
   birthDate                DateTime? @db.Date
   sex                      Sex?
+  memos                    Memo[]
   @@map("patient")
 }
 
@@ -41,6 +43,7 @@ model User {
   doctor         Doctor?
   patient        Patient?
   userRoles      UserRoles[]
+  stripeCustomerId String?    @db.Text
 
   @@map("user")
 }
@@ -69,6 +72,46 @@ model UserRoles {
 
   @@id([uid, role], map: "UserRoles_pkey")
   @@map("user_roles")
+}
+
+model Memo {
+  id                        Int          @id @default(autoincrement())
+  patient                   Patient      @relation(fields: [patientUid], references: [uid], onDelete: Cascade)
+  patientUid                String       @db.VarChar(50)
+  doctor                    Doctor       @relation(fields: [doctorUid], references: [uid], onDelete: Cascade)
+  doctorUid                 String       @db.VarChar(50)
+  description               String       @db.Text
+  diagnoses                 Diagnosis[]
+  prescriptions             Prescription[]
+  createdAt                 DateTime     @default(now())
+  updatedAt                 DateTime?
+  patientHasAccess          Boolean      @default(false)
+  stripeSessionId           String?       @db.Text
+
+  @@map("memo")
+}
+
+model Diagnosis {
+  id        Int     @id @default(autoincrement())
+  memo      Memo    @relation(fields: [memoId], references: [id], onDelete: Cascade)
+  memoId    Int
+  code      String  @db.VarChar(50)
+  title     String  @db.Text
+
+  @@map("diagnosis")
+}
+
+model Prescription {
+  id            Int     @id @default(autoincrement())
+  memo          Memo    @relation(fields: [memoId], references: [id], onDelete: Cascade)
+  memoId        Int
+  drugName      String  @db.Text
+  dosage        String  @db.Text
+  unitsPerDose  String  @db.Text
+  totalUnits    String  @db.Text
+  frequency     String  @db.Text
+
+  @@map("prescription")
 }
 
 enum Role {
