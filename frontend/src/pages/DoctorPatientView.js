@@ -94,6 +94,7 @@ const DoctorPatientView = () => {
 
                                 <Switch>
                                     <Route exact path={`${url}`}>
+                                        <SectionTitle>Viewing All Memos</SectionTitle>
                                         <DoctorMemoTable patientUid={patient.uid}/>
                                     </Route>
                                     <Route exact path={`${url}/createMemo`}>

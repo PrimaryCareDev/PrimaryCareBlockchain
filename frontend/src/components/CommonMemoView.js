@@ -25,8 +25,11 @@ const CommonMemoView = (props) => {
                         className="ml-3 text-sm text-gray-900">Dr. {data.doctor.user.firstName} {data.doctor.user.lastName}</span>
                     <span className="text-sm font-medium text-gray-500">Created On</span>
                     <span className="ml-3 text-sm text-gray-900">{formatDateTime(data.createdAt)}</span>
+                    {data.updatedAt &&
+                        <>
                     <span className="text-sm font-medium text-gray-500">Last Updated</span>
                     <span className="ml-3 text-sm text-gray-900">{formatDateTime(data.updatedAt)}</span>
+                    </>}
                 </div>
             </div>
             <div className="p-4 border-b border-gray-200">
