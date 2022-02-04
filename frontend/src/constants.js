@@ -1,5 +1,8 @@
 import axios from "axios";
 import {getAuth} from "firebase/auth";
+import {DateTime} from "luxon";
+import React from "react";
+import {useLocation} from "react-router-dom";
 
 export const userType = {
     DOCTOR: "DOCTOR",
@@ -26,12 +29,22 @@ export function getApiUrl() {
 }
 
 export const axiosInstance = axios.create({
-    baseURL: getApiUrl()
+    baseURL: getApiUrl() + '/auth'
     // headers: {
     //     'Content-Type': 'application/json',
     //     'Authorization': `Bearer ${await getAuth().currentUser.getIdToken()}`
     // },
 });
+
+export function formatDateTime(dateTimeStr) {
+    const date = DateTime.fromISO(dateTimeStr)
+    return date.toLocaleString(DateTime.DATETIME_MED)
+}
+
+export function formatDate(dateStr) {
+    const date = DateTime.fromISO(dateStr)
+    return date.toLocaleString(DateTime.DATE_MED)
+}
 
 axiosInstance.interceptors.request.use(async config => {
     const token = await getAuth().currentUser.getIdToken()
@@ -41,3 +54,15 @@ axiosInstance.interceptors.request.use(async config => {
     }
     return config
 })
+
+export function titleCase(string){
+    return string[0].toUpperCase() + string.slice(1).toLowerCase();
+}
+
+// A custom hook that builds on useLocation to parse
+// the query string for you.
+export function useQuery() {
+    const { search } = useLocation();
+
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+}

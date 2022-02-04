@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import DashboardLayout from '../dashboard/layout';
 import DoctorHome from "./DoctorHome";
-import {Link, Route, Switch, useRouteMatch} from "react-router-dom";
+import {Link, Redirect, Route, Switch, useRouteMatch} from "react-router-dom";
 import DoctorPatientList from "./DoctorPatientList";
 import {useAuth} from "../useAuth";
 import {axiosInstance, userType} from "../constants";
@@ -9,6 +9,7 @@ import LoadingDots from "../components/LoadingDots";
 import DoctorPatientManagement from "./DoctorPatientManagement";
 import DoctorAccountSettings from "./DoctorAccountSettings";
 import DoctorPatientView from "./DoctorPatientView";
+import DoctorUnverifiedError from "./DoctorUnverifiedError";
 
 const Doctor = () => {
     let {url} = useRouteMatch();
@@ -66,17 +67,20 @@ const Doctor = () => {
                         <Route path={`${url}`} exact={true}>
                             <DoctorHome onSubmitRegistration={getDoctorDetails}/>
                         </Route>
-                        <Route exact path={`${url}/patients`}>
+                        <VerifiedRoute exact path={`${url}/patients`} redirectTo={`${url}/unverified`}>
                             <DoctorPatientList/>
-                        </Route>
-                        <Route path={`${url}/patients/:id`}>
+                        </VerifiedRoute>
+                        <VerifiedRoute path={`${url}/patients/:patientUid`} redirectTo={`${url}/unverified`}>
                             <DoctorPatientView/>
-                        </Route>
-                        <Route path={`${url}/managePatients`}>
+                        </VerifiedRoute>
+                        <VerifiedRoute path={`${url}/managePatients`} redirectTo={`${url}/unverified`}>
                             <DoctorPatientManagement/>
-                        </Route>
+                        </VerifiedRoute>
                         <Route path={`${url}/accountSettings`}>
                             <DoctorAccountSettings/>
+                        </Route>
+                        <Route path={`${url}/unverified`}>
+                            <DoctorUnverifiedError/>
                         </Route>
                     </Switch>
                     :
@@ -87,6 +91,29 @@ const Doctor = () => {
         </DashboardLayout>
 
     )
+}
+
+function VerifiedRoute({ redirectTo, children, ...rest }) {
+    let { userData } = useAuth();
+
+    return (
+        <Route
+            {...rest}
+            render={({ location }) =>
+                userData.verified ? (
+                    children
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: redirectTo,
+                            state: { from: location }
+                        }}
+                    />
+                )
+
+            }
+        />
+    );
 }
 
 export default Doctor

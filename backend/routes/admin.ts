@@ -37,8 +37,6 @@ adminRouter.get('/getApprovalsList', async (req: MyRequest, res) => {
     })
 
     res.json({totalCount, results})
-
-
 })
 
 adminRouter.get('/getDoctorDetails', async (req: MyRequest, res) => {

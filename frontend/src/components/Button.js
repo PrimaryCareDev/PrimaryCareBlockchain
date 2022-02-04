@@ -42,6 +42,11 @@ const button = {
       active: 'hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500',
       disabled: 'opacity-50 cursor-not-allowed',
     },
+    danger: {
+      base: 'text-white bg-red-600 border border-transparent',
+      active: 'hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500',
+      disabled: 'opacity-50 cursor-not-allowed',
+    },
     outline: {
       base: 'text-gray-600 border-gray-300 border dark:text-gray-400 focus:outline-none',
       active:
@@ -112,6 +117,7 @@ const Button = forwardRef((props, ref) => {
     primary: button.primary.base,
     submit: button.submit.base,
     neutral: button.neutral.base,
+    danger: button.danger.base,
     outline: button.outline.base,
     link: button.link.base,
   }
@@ -120,6 +126,7 @@ const Button = forwardRef((props, ref) => {
     submit: button.submit.active,
     neutral: button.neutral.active,
     outline: button.outline.active,
+    danger: button.danger.active,
     link: button.link.active,
   }
   const disabledStyles = {
@@ -127,6 +134,7 @@ const Button = forwardRef((props, ref) => {
     submit: button.submit.disabled,
     neutral: button.neutral.disabled,
     outline: button.outline.disabled,
+    danger: button.danger.disabled,
     link: button.link.disabled,
   }
 

@@ -7,6 +7,8 @@ import PatientHome from "./PatientHome";
 import {axiosInstance, userType} from "../constants";
 import PatientDoctorList from "./PatientDoctorList";
 import PatientAccountSettings from "./PatientAccountSettings";
+import PatientMemoList from "./PatientMemoList";
+import PatientMemoView from "./PatientMemoView";
 
 const Patient = () => {
 
@@ -71,6 +73,12 @@ const Patient = () => {
                         </Route>
                         <Route path={`${path}/accountSettings`}>
                             <PatientAccountSettings/>
+                        </Route>
+                        <Route exact path={`${path}/memos`}>
+                            <PatientMemoList/>
+                        </Route>
+                        <Route exact path={`${path}/memos/:memoId`}>
+                            <PatientMemoView />
                         </Route>
                     </Switch>
                     :
