@@ -90,8 +90,6 @@ const DoctorPatientView = () => {
                                     <Button onClick={createMemo}>Create New Memo</Button>
                                 </div>
 
-                                <SectionTitle>Viewing All Memos</SectionTitle>
-
                                 <Switch>
                                     <Route exact path={`${url}`}>
                                         <SectionTitle>Viewing All Memos</SectionTitle>
