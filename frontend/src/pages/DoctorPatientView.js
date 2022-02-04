@@ -9,6 +9,7 @@ import {DateTime} from "luxon";
 import DoctorMemoForm from "./DoctorMemoForm";
 import DoctorMemoTable from "../components/DoctorMemoTable";
 import DoctorMemoView from "./DoctorMemoView";
+import SectionTitle from "../components/SectionTitle";
 
 const DoctorPatientView = () => {
 
@@ -88,6 +89,8 @@ const DoctorPatientView = () => {
                                 <div>
                                     <Button onClick={createMemo}>Create New Memo</Button>
                                 </div>
+
+                                <SectionTitle>Viewing All Memos</SectionTitle>
 
                                 <Switch>
                                     <Route exact path={`${url}`}>

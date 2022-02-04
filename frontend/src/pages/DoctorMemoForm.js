@@ -58,8 +58,9 @@ const DoctorMemoForm = (props) => {
                 prescriptions: newPrescriptions
             })
 
-            onBack(true)
         }
+        onBack(true)
+
     }
 
     function addCode(value) {
