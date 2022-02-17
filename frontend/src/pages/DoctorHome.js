@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import SectionTitle from "../components/SectionTitle";
 import {useAuth} from "../useAuth";
 import DoctorVerificationForm from "./DoctorVerificationForm";
+import Button from "../components/Button";
 
 const DoctorHome = (props) => {
     const {userData} = useAuth()
+    const [showForm, setShowForm] = useState(false)
 
     return (
         <>
@@ -18,16 +20,24 @@ const DoctorHome = (props) => {
                 :
                 (
                     userData.submittedForVerification ?
-                        <div className="bg-yellow-200 border-yellow-600 text-yellow-600 border-l-4 p-4"
-                             role="alert">
-                            <p className="font-bold">
-                                Your application has been received
-                            </p>
-                            <p>
-                                Please wait for a system administrator to review and verify your account.
-                            </p>
 
-                        </div>
+                        <>
+                            <div className="bg-yellow-200 border-yellow-600 text-yellow-600 border-l-4 p-4 mb-10"
+                                 role="alert">
+                                <p className="font-bold">
+                                    Your application has been received
+                                </p>
+                                <p>
+                                    Please wait for a system administrator to review and verify your account.
+                                </p>
+
+
+                            </div>
+                            {!showForm && <Button onClick={()=> setShowForm(true)}>Re-submit Verification Details</Button>}
+                            <span className="block text-sm font-medium text-red-700 mt-2">NOTE: Re-submitting details will overwrite previous submission.</span>
+                            {showForm && <DoctorVerificationForm onSubmitRegistration={props.onSubmitRegistration}/>}
+
+                        </>
                         :
                         <>
                             <div className="bg-yellow-200 border-yellow-600 text-yellow-600 border-l-4 p-4 mb-10"

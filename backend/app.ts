@@ -13,14 +13,18 @@ import doctorRouter from "./routes/doctor";
 import {Role} from "@prisma/client";
 import Stripe from 'stripe';
 import publicRouter from "./routes/public";
+import {getStorage} from "firebase-admin/storage";
 
 dotenv.config()
 const app = express()
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_CREDS as string);
 const firebaseApp: App = initializeApp({
-    credential: cert(serviceAccount)
+    credential: cert(serviceAccount),
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
 });
+
+export const bucket = getStorage().bucket()
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY as string,
     {apiVersion: '2020-08-27'});

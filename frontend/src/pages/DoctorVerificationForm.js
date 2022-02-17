@@ -77,7 +77,7 @@ const DoctorVerificationForm = (props) => {
     }
 
     return (
-        <div className="max-w-6xl mt-5 md:mt-0 justify-self-center">
+        <div className="max-w-6xl my-5 md:mt-0 justify-self-center">
             <FormProvider {...methods} >
                 <form onSubmit={handleSubmit(onSubmit)} method="POST">
                     <div className="shadow overflow-hidden sm:rounded-md">

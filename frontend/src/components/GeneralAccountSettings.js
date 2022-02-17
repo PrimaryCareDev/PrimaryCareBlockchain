@@ -1,10 +1,8 @@
 import React, {useRef, useState} from 'react';
 import {useAuth} from "../useAuth";
 import DefaultAvatar from "./DefaultAvatar";
-
-import {FormProvider, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import SectionTitle from "./SectionTitle";
-import SubTitle from "./SubTitle";
 import Button from "./Button";
 import AvatarEditor from "react-avatar-editor";
 import {ZoomInIcon, ZoomOutIcon} from "@heroicons/react/solid";
@@ -13,17 +11,18 @@ import {getDownloadURL, getStorage, ref, uploadString} from "firebase/storage";
 import {axiosInstance} from "../constants";
 import SmallLoadingSpinner from "./SmallLoadingSpinner";
 import classnames from "classnames";
+import {getAuth, EmailAuthProvider, reauthenticateWithCredential} from "firebase/auth";
+import ChangePasswordForm from "./ChangePasswordForm";
 
 const GeneralAccountSettings = () => {
 
     const {register, handleSubmit, formState: {errors}} = useForm();
+    const [submitting, setSubmitting] = useState(false)
     const {user, userData} = useAuth()
     const [avatarImage, setAvatarImage] = useState()
     const [avatarImageScale, setAvatarImageScale] = useState(1.2)
-    const [submitting, setSubmitting] = useState(false)
     const avatarImageInput = useRef(null)
     const storage = getStorage();
-
 
     const avatarImageEditor = useRef(null)
 
@@ -125,9 +124,9 @@ const GeneralAccountSettings = () => {
 
 
                 </div>
-                <div className="my-3 py-5 border-y-2 border-gray-400 col-span-3 grid grid-cols-2 gap-y-3 items-center">
+                <div className="py-5 border-y-2 border-gray-400 col-span-3 grid grid-cols-2 gap-y-3 items-center">
                     <div className="col-span-2">
-                        <label className="block font-semibold text-gray-700">
+                        <label className="block font-medium text-gray-700">
                             Email
                         </label>
                         <span className="col-span-1">{userData.email}</span>
@@ -135,7 +134,7 @@ const GeneralAccountSettings = () => {
                     <form onSubmit={handleSubmit(onNameSubmit)} className="col-span-2">
                         <div className="grid grid-cols-2 gap-3">
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="block font-semibold text-gray-700">
+                                <label className="block font-medium text-gray-700">
                                     First Name
                                 </label>
                                 {/*<span className="col-span-1">{userData.firstName}</span>*/}
@@ -146,7 +145,7 @@ const GeneralAccountSettings = () => {
                                     className={classnames("mt-1 col-span-1 focus:ring-indigo-500 focus:border-indigo-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md",
                                         {
                                             'border-red-500': errors.firstName
-                                        })}                                    defaultValue={userData.firstName}
+                                        })} defaultValue={userData.firstName}
                                     {...register("firstName", {required: true})}
                                 />
                                 {errors.firstName &&
@@ -154,7 +153,7 @@ const GeneralAccountSettings = () => {
                                         required</p>}
                             </div>
                             <div className="col-span-2 sm:col-span-1">
-                                <label className="col-span-1 font-semibold text-gray-700">
+                                <label className="col-span-1 font-medium text-gray-700">
                                     Last Name
                                 </label>
                                 {/*<span className="col-span-1">{userData.lastName}</span>*/}
@@ -175,16 +174,19 @@ const GeneralAccountSettings = () => {
                             </div>
 
                             <div className="col-start-1">
-                            <Button
-                                type="submit"
-                                layout="submit"
-                                disabled={submitting}>{submitting &&
-                                <SmallLoadingSpinner className="h-5 w-5 mr-2 -ml-1"/>}Update Name</Button>
+                                <Button
+                                    type="submit"
+                                    layout="submit"
+                                    disabled={submitting}>{submitting &&
+                                    <SmallLoadingSpinner className="h-5 w-5 mr-2 -ml-1"/>}Update Name</Button>
                             </div>
                         </div>
                     </form>
+                </div>
 
-
+                <div className="py-5 border-b-2 border-gray-400 col-span-3 grid grid-cols-2 gap-y-3 items-center">
+                    <span className="block font-semibold text-lg text-gray-700">Change password</span>
+                    <ChangePasswordForm/>
                 </div>
             </div>
         </div>

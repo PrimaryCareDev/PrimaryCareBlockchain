@@ -44,6 +44,8 @@ model User {
   patient        Patient?
   userRoles      UserRoles[]
   stripeCustomerId String?    @db.Text
+  createdAt      DateTime     @default(now())
+
 
   @@map("user")
 }
