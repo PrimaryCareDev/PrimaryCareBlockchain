@@ -1,16 +1,15 @@
-import React, {useState, useEffect, useContext, createContext} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import {initializeApp} from 'firebase/app';
 import {
+    confirmPasswordReset, EmailAuthProvider,
     getAuth,
-    onAuthStateChanged,
-    signOut,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
+    onAuthStateChanged, reauthenticateWithCredential,
     sendPasswordResetEmail,
-    confirmPasswordReset,
-    deleteUser
+    signInWithEmailAndPassword,
+    signOut,
+    updatePassword
 } from "firebase/auth";
-import {axiosInstance, userType} from "./constants";
+import {publicAxiosInstance, userType} from "./constants";
 
 
 // Add your Firebase credentials
@@ -52,37 +51,32 @@ export function AuthProvider({children}) {
 
     const registerAccount = async (email, password, userRole) => {
 
-        return await createUserWithEmailAndPassword(auth, email, password)
-            .then(async (value) => {
 
-                // try {
-                let apiRegistrationPath = ""
-                switch (userRole) {
-                    case userType.DOCTOR:
-                        apiRegistrationPath = "/registerDoctor"
-                        break
-                    case userType.PATIENT:
-                        apiRegistrationPath = "/registerPatient"
-                        break
-                    default:
-                        return
+        let apiRegistrationPath = ""
+        switch (userRole) {
+            case userType.DOCTOR:
+                apiRegistrationPath = "/createDoctor"
+                break
+            case userType.PATIENT:
+                apiRegistrationPath = "/createPatient"
+                break
+            default:
+                return
+        }
+
+        const res = await publicAxiosInstance.post(apiRegistrationPath, {email, password})
+            .catch(async function (error) {
+                console.log(error.response.data)
+                if (!error.status) {
+                    throw new Error(error.response.data)
+                } else {
+                    throw error
                 }
-
-
-                const res = await axiosInstance.post(apiRegistrationPath, {})
-                    .catch(async function (error) {
-                        console.log(error)
-                        await deleteUser(value.user)
-                        if (!error.status) {
-                            throw new Error("Internal network error. Please try again.")
-                        } else {
-                            throw error
-                        }
-                    })
-
-                return res
             })
 
+        await signin(email, password)
+
+        return res
     };
 
 
@@ -97,6 +91,20 @@ export function AuthProvider({children}) {
     const confirmReset = (code, password) => {
         return confirmPasswordReset(auth, code, password)
     };
+
+    async function updateUserPassword(currentPassword, newPassword) {
+        const credential = EmailAuthProvider.credential(
+            auth.currentUser.email,
+            currentPassword
+        )
+
+        const result = await reauthenticateWithCredential(
+            auth.currentUser,
+            credential
+        )
+
+        return await updatePassword(auth.currentUser, newPassword)
+    }
 
     // Subscribe to user on mount
     // Because this sets state in the callback it will cause any ...
@@ -127,6 +135,7 @@ export function AuthProvider({children}) {
         signout,
         sendPasswordResetEmail,
         confirmPasswordReset,
+        updateUserPassword,
     };
     return (<AuthContext.Provider value={value}>
         {!loading && children}

@@ -12,6 +12,7 @@ import {Link, useRouteMatch} from "react-router-dom";
 import DefaultAvatar from "../components/DefaultAvatar";
 import Pagination from "../components/Pagination";
 import {axiosInstance} from "../constants";
+import SectionTitle from "../components/SectionTitle";
 
 const AdminApprovals = () => {
 
@@ -41,6 +42,7 @@ const AdminApprovals = () => {
 
     return (
         <>
+            <SectionTitle>List of Doctors Awaiting Verification</SectionTitle>
             {!loading ?
 
                 <TableContainer className="mb-8">

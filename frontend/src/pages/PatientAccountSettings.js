@@ -17,14 +17,14 @@ const PatientAccountSettings = () => {
             <GeneralAccountSettings/>
             <div className="grid grid-cols-2 py-3">
                 <div className="col-span-2 sm:col-span-1">
-                    <label className="block font-semibold text-gray-700">
+                    <label className="block font-medium text-gray-700">
                         Sex
                     </label>
                     <span className="col-span-1">{userData.sex}</span>
                 </div>
                 <div className="grid grid-cols-2">
                     <div className="col-span-2 sm:col-span-1">
-                        <label className="block font-semibold text-gray-700">
+                        <label className="block font-medium text-gray-700">
                             Birth Date
                         </label>
                         <span className="col-span-1">{formatBirthDate()}</span>
