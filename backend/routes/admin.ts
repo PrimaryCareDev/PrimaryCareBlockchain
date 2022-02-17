@@ -1,7 +1,7 @@
-import {PrismaClientKnownRequestError} from "@prisma/client/runtime";
-import {MyRequest} from "../app";
+import {bucket, MyRequest} from "../app";
 import express from "express"
 import prisma from "../prisma-client";
+import {celebrate, Joi, Segments} from "celebrate";
 
 const adminRouter = express.Router()
 
@@ -61,19 +61,41 @@ adminRouter.get('/getDoctorDetails', async (req: MyRequest, res) => {
 
 })
 
-adminRouter.post('/approveDoctor', async (req: MyRequest, res) => {
+adminRouter.post('/approveDoctor',
+    celebrate({
+        [Segments.BODY]: Joi.object().keys({
+            doctorUid: Joi.string().required()
+        })
+    }),
+    async (req: MyRequest, res) => {
 
-    await prisma.doctor.update({
-        where: {
-            uid: req.body.doctorUid
-        },
-        data: {
-            verified: true
-        }
+        const {doctorUid} = req.body
+
+        await prisma.doctor.update({
+            where: {
+                uid: doctorUid
+            },
+            data: {
+                verified: true
+            }
+        })
+
+        await bucket.file("images/identification/" + doctorUid).delete()
+            .catch((e) => {
+                console.log("Could not delete identification image for doctor with uid " + doctorUid)
+                console.log(e.response)
+            })
+
+        await bucket.file("images/licenses/" + doctorUid).delete()
+            .catch((e) => {
+                console.log("Could not delete medical license image for doctor with uid " + doctorUid)
+                console.log(e.response)
+            })
+
+        console.log("User " + req.body.doctorUid + " approved as doctor")
+
+        return res.status(200).send("User " + req.body.doctorUid + " approved as doctor")
+
     })
-
-    res.status(200).send("User " + req.body.doctorUid + " approved as doctor")
-
-})
 
 export default adminRouter

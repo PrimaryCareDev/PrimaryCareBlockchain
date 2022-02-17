@@ -4,6 +4,7 @@ import {useAuth} from "../useAuth.js";
 import {Link, useHistory, useLocation} from "react-router-dom"
 import {getAuth} from "firebase/auth";
 import logo from "../healthlink_logo.svg";
+import SmallLoadingSpinner from "../components/SmallLoadingSpinner";
 
 const PatientLogin = () => {
     const emailRef = useRef()
@@ -111,17 +112,16 @@ const PatientLogin = () => {
                                                 aria-hidden="true"/>
                             </span>
                             Sign in
+                            {loading &&
+                                <SmallLoadingSpinner className="h-5 w-5 mr-2 ml-2"/>}
                         </button>
                     </div>
                 </form>
 
                 {error &&
                     <div className="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-600">
-                        <span className="text-xl inline-block mr-5 align-middle">
-                            <i className="fas fa-bell"/>
-                        </span>
                         <span className="inline-block align-middle mr-8">
-                            <b className="capitalize">Error</b> {error}
+                            <b className="capitalize">Error:</b> {error}
                         </span>
                         <button onClick={onAlertCloseClick}
                                 className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">

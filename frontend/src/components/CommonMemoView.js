@@ -7,7 +7,7 @@ const CommonMemoView = (props) => {
 
     const {data, onBack, hasEditAccess, onEditClick} = props
     return (
-        <div className="max-w-7xl my-3 bg-white shadow overflow-hidden rounded-lg">
+        <div className="max-w-7xl my-6 bg-white shadow overflow-hidden rounded-lg">
             <div className="border-b border-gray-200 p-4 bg-white flex items-center gap-x-3">
                 <div className="border-r border-gray-200">
                     <Button icon={ChevronLeftIcon} size="large" layout="link"
@@ -47,7 +47,7 @@ const CommonMemoView = (props) => {
 
             <div className="p-4 border-b border-gray-200">
                 <h3 className="mb-3 text-lg font-medium text-gray-900">Description</h3>
-                <p>{data.description}</p>
+                <p className="whitespace-pre-line">{data.description}</p>
             </div>
 
             <div className="p-4 border-b border-gray-200">

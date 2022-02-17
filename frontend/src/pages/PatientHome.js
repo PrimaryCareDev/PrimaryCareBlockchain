@@ -11,7 +11,7 @@ const PatientHome = (props) => {
 
     return (
         <div>
-            <SectionTitle>Welcome to Healthlink{` ${userData.firstName} ${userData.lastName}`}</SectionTitle>
+            <SectionTitle>Welcome to Healthlink {userData.firstName} {userData.lastName}</SectionTitle>
 
 
             {userData.verified ?
